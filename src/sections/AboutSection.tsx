@@ -1,10 +1,20 @@
 import React from "react";
+import { ArrowUpRight, Code2, Layers, Cpu, GitCommit } from "lucide-react";
 
 const stats = [
-  { value: "3+", label: "Years Experience" },
-  { value: "20+", label: "Projects Shipped" },
-  { value: "10+", label: "Happy Clients" },
-  { value: "5k+", label: "GitHub Commits" },
+  { value: "1+", label: "Years Experience", icon: Cpu },
+  { value: "10+", label: "Projects Shipped", icon: Layers },
+  { value: "3+", label: "Happy Clients", icon: Code2 },
+  { value: "1k+", label: "GitHub Commits", icon: GitCommit },
+];
+
+const interests = [
+  "System Design",
+  "Open Source",
+  "Typography",
+  "Performance",
+  "DX",
+  "Clean Architecture",
 ];
 
 function AboutSection() {
@@ -13,16 +23,26 @@ function AboutSection() {
       id="About"
       className="relative w-full bg-[#171717] py-32 overflow-hidden"
     >
-      {/* Ambient */}
+      {/* Ambient glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-125 h-125 rounded-full bg-amber-400/6 blur-[120px]" />
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-amber-400/6 blur-[130px]" />
+        <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-400/5 blur-[100px]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      {/* Noise texture */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: "200px",
+        }}
+      />
 
-          {/* Left: Text */}
-          <div className="flex flex-col gap-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+          {/* ── Left: Text ── */}
+          <div className="flex flex-col gap-10">
+            {/* Header */}
             <div>
               <p className="font-display uppercase text-amber-200/60 tracking-[0.3em] text-sm mb-3">
                 Who I Am
@@ -33,33 +53,53 @@ function AboutSection() {
               <div className="mt-4 h-px w-16 bg-amber-200/40" />
             </div>
 
-            <div className="flex flex-col gap-4 font-body text-white/50 text-base leading-relaxed">
+            {/* Body copy */}
+            <div className="flex flex-col gap-5 font-body text-white/50 text-base leading-relaxed">
               <p>
-                I&apos;m Aditya, a Full Stack Developer based in India with a
-                passion for building products that are both technically sound
-                and a pleasure to use. I specialise in the JavaScript/TypeScript
-                ecosystem — from crafting polished frontends with React and
-                Next.js to architecting robust Node.js backends.
-              </p>
-              <p>
-                I care deeply about performance, accessibility, and developer
-                experience. When I&apos;m not coding, I&apos;m exploring system
-                design, contributing to open source, or obsessing over good
-                typography.
-              </p>
-              <p>
-                I&apos;m currently open to full-time roles and selective
-                freelance projects.
+                I&apos;m{" "}
+                <span className="text-white/80 font-medium">Aditya</span>, a
+                Full Stack Developer from India who loves building fast,
+                scalable, and beautifully designed products. I work mainly with
+                the JavaScript/TypeScript ecosystem — crafting polished UIs with
+                React & Next.js and building robust backends with Node.js. I
+                care about performance, accessibility, and great developer
+                experience, and I&apos;m currently open to{" "}
+                <span className="text-amber-200/80">full-time roles</span> and
+                selective freelance projects.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            {/* Interests */}
+            <div className="flex flex-col gap-3">
+              <p className="font-display uppercase text-white/25 tracking-[0.2em] text-xs">
+                Interests
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {interests.map((tag) => (
+                  <span
+                    key={tag}
+                    className="
+                      px-3 py-1 rounded-full
+                      apple-border-shine bg-white/3
+                      font-body text-xs text-white/40
+                      transition-all duration-300
+                      hover:text-white/70 hover:bg-white/6
+                    "
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href="/resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
-                  inline-flex items-center justify-center
+                  group inline-flex items-center gap-2
                   px-7 py-3 rounded-full font-body font-medium tracking-wide
                   bg-amber-200 text-[#171717]
                   transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]
@@ -69,33 +109,74 @@ function AboutSection() {
                 "
               >
                 Download Resume
+                <ArrowUpRight
+                  size={16}
+                  strokeWidth={2}
+                  className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
+              </a>
+
+              <a
+                href="#Contact"
+                className="
+                  group inline-flex items-center gap-2
+                  px-7 py-3 rounded-full font-body font-medium tracking-wide
+                  apple-border-shine bg-white/3 text-white/70
+                  transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]
+                  hover:bg-white/8 hover:text-white hover:border-white/20
+                  hover:-translate-y-0.5 active:scale-95
+                "
+              >
+                Get in Touch
+                <ArrowUpRight
+                  size={16}
+                  strokeWidth={2}
+                  className="opacity-50 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
               </a>
             </div>
           </div>
 
-          {/* Right: Stats grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="
-                  relative flex flex-col items-start justify-end
-                  p-7 rounded-2xl overflow-hidden
-                  apple-border-shine  bg-white/3
-                  transition-all duration-300
-                  hover:border-amber-200/20 hover:bg-white/5
-                "
-              >
-                {/* Glow */}
-                <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-amber-400/10 blur-2xl" />
-                <span className="relative font-display font-bold text-5xl text-amber-200">
-                  {stat.value}
-                </span>
-                <span className="relative font-body text-sm text-white/40 mt-1">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
+          {/* ── Right: Stats grid ── */}
+          <div className="grid grid-cols-2 gap-4 lg:pt-4">
+            {stats.map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div
+                  key={stat.label}
+                  className="
+                    group relative flex flex-col items-start justify-between
+                    p-7 rounded-3xl overflow-hidden
+                    apple-border-shine bg-white/3
+                    transition-all duration-300
+                    hover:border-amber-200/20 hover:bg-white/5
+                    hover:-translate-y-1
+                  "
+                >
+                  {/* Corner glow */}
+                  <div
+                    className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{ background: `hsl(${42 + i * 8}, 90%, 65%, 0.12)` }}
+                  />
+                  <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-amber-400/8 blur-2xl pointer-events-none" />
+
+                  {/* Icon */}
+                  <div className="relative apple-border-shine p-2.5 rounded-xl bg-white/5 text-amber-200/50 mb-6">
+                    <Icon size={18} strokeWidth={1.5} />
+                  </div>
+
+                  {/* Value + label */}
+                  <div className="relative">
+                    <span className="block font-display font-bold text-5xl text-amber-200 leading-none">
+                      {stat.value}
+                    </span>
+                    <span className="block font-body text-sm text-white/40 mt-2 leading-snug">
+                      {stat.label}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

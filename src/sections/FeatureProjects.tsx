@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,13 +56,6 @@ export default function FeatureProjects() {
   const cardRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
-    const lenis = new Lenis();
-    lenis.on("scroll", ScrollTrigger.update);
-
-    const rafHandler = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(rafHandler);
-    gsap.ticker.lagSmoothing(0);
-
     const cards = cardRefs.current;
     const totalCards = cards.length;
 
@@ -133,8 +125,6 @@ export default function FeatureProjects() {
 
     return () => {
       trigger.kill();
-      gsap.ticker.remove(rafHandler);
-      lenis.destroy();
     };
   }, []);
 

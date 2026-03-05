@@ -131,7 +131,12 @@ function Testimonial() {
 
         /* ── Staggered entrance ──────────────────────────────────── */
         // Set initial state first so card is invisible before tween starts
-        gsap.set(card, { opacity: 0, y: 50, scale: 0.88, rotation: startRotation - 6 });
+        gsap.set(card, {
+          opacity: 0,
+          y: 50,
+          scale: 0.88,
+          rotation: startRotation - 6,
+        });
 
         gsap.to(card, {
           opacity: 1,
@@ -262,7 +267,9 @@ function Testimonial() {
                   y: cy,
                   duration: 0.35,
                   ease: "power2.out",
-                  onComplete: () => { d.update(); },
+                  onComplete: () => {
+                    d.update();
+                  },
                 });
               }
             },
@@ -348,7 +355,9 @@ function Testimonial() {
               y: cy,
               duration: 0.4,
               ease: "power2.out",
-              onComplete: () => { draggable?.update(); },
+              onComplete: () => {
+                draggable?.update();
+              },
             });
           }
         };
@@ -380,13 +389,6 @@ function Testimonial() {
       ref={containerRef}
       className="relative w-full h-screen flex items-center justify-center bg-[#0e0e0e] overflow-hidden"
     >
-      {/* Ambient glows */}
-      {/* <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 rounded-full bg-amber-400/5 blur-[140px]" />
-        <div className="absolute bottom-0 left-1/4 w-75 h-75 rounded-full bg-indigo-400/6 blur-[100px]" />
-        <div className="absolute top-0 right-1/4 w-62.5 h-62.5 rounded-full bg-emerald-400/5 blur-[90px]" />
-      </div> */}
-
       {/* Noise texture */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.025]"
@@ -398,13 +400,13 @@ function Testimonial() {
 
       {/* Header */}
       <div className="absolute top-16 left-8 md:left-20 z-10 pointer-events-none select-none">
-        <p className="font-display uppercase text-amber-200/50 tracking-[0.3em] text-xs mb-3">
+        <p className="font-display uppercase text-accent/50 tracking-[0.3em] text-xs mb-3">
           Kind Words
         </p>
         <h2 className="font-display font-bold uppercase text-5xl md:text-7xl text-white leading-[0.9]">
           Testimonials
         </h2>
-        <div className="mt-4 h-px w-16 bg-amber-400/40" />
+        <div className="mt-4 h-px w-16 bg-accent/40" />
       </div>
 
       {/* Drag hint */}
@@ -540,7 +542,7 @@ function Testimonial() {
 
       {/* Decorative rings */}
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full border border-white/3" />
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-87.5 h-87.5 rounded-full border border-amber-400/4" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-87.5 h-87.5 rounded-full border border-accent/4" />
 
       {/* Bottom divider */}
       <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />

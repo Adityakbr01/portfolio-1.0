@@ -1,8 +1,6 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-import Link from "next/link";
 import { ArrowDown, ArrowRight, Github, Linkedin, Twitter } from "lucide-react";
+import Link from "next/link";
 
 function HeroSection() {
 
