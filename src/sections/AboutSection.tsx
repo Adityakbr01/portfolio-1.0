@@ -19,7 +19,7 @@ const interests = [
 
 function AboutSection() {
   return (
-    <section
+    <div
       id="About"
       className="relative w-full bg-[#171717] py-32 overflow-hidden"
     >
@@ -182,7 +182,7 @@ function AboutSection() {
       </div>
 
       <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
-    </section>
+    </div>
   );
 }
 

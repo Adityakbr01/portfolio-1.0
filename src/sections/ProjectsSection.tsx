@@ -324,25 +324,13 @@ export default function ProjectsSection() {
               <div className="flex gap-2 w-20">
                 <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity duration-200">
                   {/* Close */}
-                  <div className="w-3 h-3 rounded-full bg-[#ff5f56] flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 text-[8px] font-bold text-black/70 leading-none">
-                      ×
-                    </span>
-                  </div>
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f56] flex items-center justify-center"></div>
 
                   {/* Minimize */}
-                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e] flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 text-[8px] font-bold text-black/70 leading-none">
-                      –
-                    </span>
-                  </div>
+                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e] flex items-center justify-center"></div>
 
                   {/* Maximize */}
-                  <div className="w-3 h-3 rounded-full bg-[#27c93f] flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 text-[8px] font-bold text-black/70 leading-none">
-                      +
-                    </span>
-                  </div>
+                  <div className="w-3 h-3 rounded-full bg-[#27c93f] flex items-center justify-center"></div>
                 </div>
                 {/* Browser Navigation Arrows */}
                 <div className="hidden sm:flex items-center gap-2 text-white/30 ml-2">
@@ -577,7 +565,7 @@ export default function ProjectsSection() {
 
                 {/* Right Side: Mockup Image */}
                 {project.image && (
-                  <div className="w-[19%]">
+                  <div className="w-[25%]">
                     <img
                       src={project.image}
                       alt={`${project.title} mockup`}
