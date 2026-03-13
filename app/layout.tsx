@@ -1,10 +1,10 @@
 import CustomCursor from "@/src/components/CustomCursor";
-import { Nav } from "@/src/components/layouts/navbar/Nav";
 import "lenis/dist/lenis.css";
 import { ReactLenis } from "lenis/react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Nav } from "@/src/components/layouts/navbar/Nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +46,6 @@ export default function RootLayout({
             syncTouch: false,
           }}
         >
-    
           <Nav />
           {children}
           <CustomCursor />

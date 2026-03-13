@@ -1,13 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Github, Linkedin, Mail, Twitter } from "lucide-react";
-
-const socials = [
-  { icon: Mail, label: "Email", value: "aditya@example.com", href: "mailto:aditya@example.com" },
-  { icon: Github, label: "GitHub", value: "github.com/aditya", href: "https://github.com" },
-  { icon: Linkedin, label: "LinkedIn", value: "linkedin.com/in/aditya", href: "https://linkedin.com" },
-  { icon: Twitter, label: "Twitter", value: "@aditya_dev", href: "https://twitter.com" },
-];
+import { SOCIAL_LINKS } from "@/src/constants/socialLinks";
 
 function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -19,26 +12,26 @@ function ContactSection() {
   };
 
   return (
-    <section
+    <div
       id="Contact"
-      className="relative w-full bg-[#171717] py-32 overflow-hidden"
+      className="relative w-full bg-[#171717] py-20 sm:py-24 md:py-32 overflow-hidden"
     >
       {/* Ambient */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-175 h-100 rounded-full bg-amber-400/8 blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Header */}
-        <div className="mb-16 text-center">
-          <p className="font-display uppercase text-amber-200/60 tracking-[0.3em] text-sm mb-3">
+        <div className="mb-12 sm:mb-16 text-center">
+          <p className="font-display uppercase text-amber-200/60 tracking-[0.25em] md:tracking-[0.3em] text-xs sm:text-sm mb-3">
             Get In Touch
           </p>
-          <h2 className="font-display font-bold uppercase text-5xl md:text-7xl text-white leading-[0.9]">
+          <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl md:text-7xl text-white leading-[0.9]">
             Contact
           </h2>
           <div className="mt-4 h-px w-16 bg-amber-200/40 mx-auto" />
-          <p className="mt-6 font-body text-white/40 max-w-md mx-auto">
+          <p className="mt-6 font-body text-sm sm:text-base text-white/40 max-w-md mx-auto">
             Have a project in mind or want to chat? My inbox is always open.
           </p>
         </div>
@@ -47,12 +40,12 @@ function ContactSection() {
 
           {/* Socials */}
           <div className="lg:col-span-2 flex flex-col gap-4 justify-center">
-            {socials.map(({ icon: Icon, label, value, href }) => (
+            {SOCIAL_LINKS.map(({ icon: Icon, name, value, url, id }) => (
               <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
+                key={name}
+                href={url}
+                target={id === "email" ? undefined : "_blank"}
+                rel={id === "email" ? undefined : "noopener noreferrer"}
                 className="
                   group flex items-center gap-4 p-4 rounded-xl
                   border border-white/8 bg-white/3
@@ -64,7 +57,7 @@ function ContactSection() {
                   <Icon size={16} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-display uppercase text-xs tracking-widest text-white/30">{label}</span>
+                  <span className="font-display uppercase text-xs tracking-widest text-white/30">{name}</span>
                   <span className="font-body text-sm text-white/55 group-hover:text-white/80 transition-colors">{value}</span>
                 </div>
               </a>
@@ -88,7 +81,7 @@ function ContactSection() {
             ) : (
               <form
                 onSubmit={handleSubmit}
-                className="flex flex-col gap-4 p-8 rounded-2xl border border-white/8 bg-white/3 backdrop-blur-sm"
+                className="flex flex-col gap-4 p-5 sm:p-8 rounded-2xl border border-white/8 bg-white/3 backdrop-blur-sm"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Name */}
@@ -164,7 +157,7 @@ function ContactSection() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 

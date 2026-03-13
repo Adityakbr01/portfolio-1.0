@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/link"; // Not actually using next/image to avoid config, just standard img tags for external SVGs are fine, or next/image if configured. I'll use standard <img> with loading lazy for 0 performance impact.
 import { Layout, Server, Database, Terminal } from "lucide-react";
 
 // Using widely available Devicon SVGs
@@ -143,20 +142,20 @@ function SkillsSection() {
   return (
     <div
       id="Skills"
-      className="relative w-full bg-[#171717] py-32 overflow-hidden"
+      className="relative w-full bg-[#171717] py-20 sm:py-24 md:py-32 overflow-hidden"
     >
       {/* Ambient */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 rounded-full bg-amber-400/5 blur-[130px]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Header */}
-        <div className="mb-16">
-          <p className="font-display uppercase text-amber-200/60 tracking-[0.3em] text-sm mb-3">
+        <div className="mb-12 sm:mb-16">
+          <p className="font-display uppercase text-amber-200/60 tracking-[0.25em] md:tracking-[0.3em] text-xs sm:text-sm mb-3">
             What I Use
           </p>
-          <h2 className="font-display font-bold uppercase text-5xl md:text-7xl text-white leading-[0.9]">
+          <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl md:text-7xl text-white leading-[0.9]">
             Skills
           </h2>
           <div className="mt-4 h-px w-16 bg-amber-200/40" />
@@ -170,7 +169,7 @@ function SkillsSection() {
               <div
                 key={cat.category}
                 className="
-                  relative flex flex-col gap-6 p-8 rounded-3xl overflow-hidden
+                  relative flex flex-col gap-5 sm:gap-6 p-5 sm:p-8 rounded-3xl overflow-hidden
                   apple-border-shine bg-white/3
                   transition-all duration-300
                   hover:border-amber-200/20 hover:bg-white/5
@@ -188,7 +187,7 @@ function SkillsSection() {
                   <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-amber-200/80">
                     <Icon size={24} strokeWidth={1.5} />
                   </div>
-                  <h3 className="font-display uppercase text-sm tracking-[0.2em] text-white">
+                  <h3 className="font-display uppercase text-xs sm:text-sm tracking-[0.2em] text-white">
                     {cat.category}
                   </h3>
                 </div>
@@ -199,9 +198,9 @@ function SkillsSection() {
                       key={skill.name}
                       className="
                         flex items-center gap-2
-                        px-4 py-2 rounded-full 
+                        px-3 sm:px-4 py-2 rounded-full 
                         bg-white/5 apple-border-shine
-                        font-body text-sm text-white/80
+                        font-body text-xs sm:text-sm text-white/80
                         transition-all duration-300
                         hover:bg-white/10 hover:text-white hover:border-white/20
                         hover:-translate-y-0.5

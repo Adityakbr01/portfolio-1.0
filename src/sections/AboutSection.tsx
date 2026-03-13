@@ -21,7 +21,7 @@ function AboutSection() {
   return (
     <div
       id="About"
-      className="relative w-full bg-[#171717] py-32 overflow-hidden"
+      className="relative w-full bg-[#171717] py-20 sm:py-24 md:py-32 overflow-hidden"
     >
       {/* Ambient glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -38,23 +38,23 @@ function AboutSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-start">
           {/* ── Left: Text ── */}
-          <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-8 md:gap-10">
             {/* Header */}
             <div>
-              <p className="font-display uppercase text-amber-200/60 tracking-[0.3em] text-sm mb-3">
+              <p className="font-display uppercase text-amber-200/60 tracking-[0.25em] md:tracking-[0.3em] text-xs sm:text-sm mb-3">
                 Who I Am
               </p>
-              <h2 className="font-display font-bold uppercase text-5xl md:text-7xl text-white leading-[0.9]">
+              <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl md:text-7xl text-white leading-[0.9]">
                 About
               </h2>
               <div className="mt-4 h-px w-16 bg-amber-200/40" />
             </div>
 
             {/* Body copy */}
-            <div className="flex flex-col gap-5 font-body text-white/50 text-base leading-relaxed">
+            <div className="flex flex-col gap-5 font-body text-white/50 text-sm sm:text-base leading-relaxed">
               <p>
                 I&apos;m{" "}
                 <span className="text-white/80 font-medium">Aditya</span>, a
@@ -138,7 +138,7 @@ function AboutSection() {
           </div>
 
           {/* ── Right: Stats grid ── */}
-          <div className="grid grid-cols-2 gap-4 lg:pt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:pt-4">
             {stats.map((stat, i) => {
               const Icon = stat.icon;
               return (
@@ -146,7 +146,7 @@ function AboutSection() {
                   key={stat.label}
                   className="
                     group relative flex flex-col items-start justify-between
-                    p-7 rounded-3xl overflow-hidden
+                    p-5 sm:p-7 rounded-3xl overflow-hidden
                     apple-border-shine bg-white/3
                     transition-all duration-300
                     hover:border-amber-200/20 hover:bg-white/5
@@ -167,7 +167,7 @@ function AboutSection() {
 
                   {/* Value + label */}
                   <div className="relative">
-                    <span className="block font-display font-bold text-5xl text-amber-200 leading-none">
+                    <span className="block font-display font-bold text-4xl sm:text-5xl text-amber-200 leading-none">
                       {stat.value}
                     </span>
                     <span className="block font-body text-sm text-white/40 mt-2 leading-snug">

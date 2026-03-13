@@ -387,7 +387,7 @@ function Testimonial() {
     <section
       id="Testimonials"
       ref={containerRef}
-      className="relative w-full h-screen flex items-center justify-center bg-[#0e0e0e] overflow-hidden"
+      className="relative w-full h-screen flex items-center justify-center bg-[#0e0e0e] overflow-hidden px-3 sm:px-0"
     >
       {/* Noise texture */}
       <div
@@ -399,18 +399,18 @@ function Testimonial() {
       />
 
       {/* Header */}
-      <div className="absolute top-16 left-8 md:left-20 z-10 pointer-events-none select-none">
-        <p className="font-display uppercase text-accent/50 tracking-[0.3em] text-xs mb-3">
+      <div className="absolute top-12 sm:top-16 left-4 sm:left-8 md:left-20 z-10 pointer-events-none select-none">
+        <p className="font-display uppercase text-accent/50 tracking-[0.25em] sm:tracking-[0.3em] text-[10px] sm:text-xs mb-2 sm:mb-3">
           Kind Words
         </p>
-        <h2 className="font-display font-bold uppercase text-5xl md:text-7xl text-white leading-[0.9]">
+        <h2 className="font-display font-bold uppercase text-3xl sm:text-5xl md:text-7xl text-white leading-[0.9]">
           Testimonials
         </h2>
         <div className="mt-4 h-px w-16 bg-accent/40" />
       </div>
 
       {/* Drag hint */}
-      <p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/20 text-xs tracking-[0.3em] uppercase pointer-events-none select-none font-body animate-pulse">
+      <p className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 text-white/20 text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.3em] uppercase pointer-events-none select-none font-body animate-pulse">
         ↔ drag the cards
       </p>
 
@@ -430,7 +430,7 @@ function Testimonial() {
           key={i}
           data-idx={i}
           data-rotation={t.rotation}
-          className="t-card absolute  w-80 md:w-90 z-10 select-none"
+          className="t-card absolute w-68 sm:w-80 md:w-90 z-10 select-none"
           style={{
             top: t.top,
             left: t.left,
@@ -466,7 +466,7 @@ function Testimonial() {
               }}
             />
 
-            <div className="p-7 flex flex-col gap-5">
+            <div className="p-5 sm:p-7 flex flex-col gap-4 sm:gap-5">
               {/* Quote mark */}
               <svg
                 width="32"
@@ -482,7 +482,7 @@ function Testimonial() {
               </svg>
 
               {/* Quote text */}
-              <p className="font-body text-white/70 text-sm leading-relaxed">
+              <p className="font-body text-white/70 text-xs sm:text-sm leading-relaxed">
                 {t.quote}
               </p>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import {
   ArrowUpRight,
@@ -190,11 +191,6 @@ export default function ProjectsSection() {
       });
     });
 
-    // Note: totalCards - 1 is used because the LAST card doesn't need to scroll AWAY.
-    // However, if we do window.innerHeight * (totalCards), there will be an extra segment
-    // of scroll space where nothing happens (since the last card is pinned).
-    // To make it end EXACTLY when the last card arrives without extra scroll,
-    // the end trigger height should be `+=${window.innerHeight * (totalCards - 1)}px`.
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
@@ -203,16 +199,8 @@ export default function ProjectsSection() {
       pinSpacing: true,
       scrub: 1,
       onUpdate: (self) => {
-        // Because the end is (totalCards - 1), progress mapped via (1 / (totalCards - 1))
-        // represents exactly the transition between cards.
         const progress = self.progress;
-
-        // We use totalCards - 1 as the denominator for segProgress
-        // Example: 3 cards. totalCards - 1 = 2 segments of animation.
-        // segment 0: Card 1 goes away, Card 2 scales up.
-        // segment 1: Card 2 goes away, Card 3 scales up.
         const segmentSizeFixed = 1 / (totalCards - 1);
-
         const activeIndex = Math.min(
           Math.floor(progress / segmentSizeFixed),
           totalCards - 1,
@@ -224,10 +212,6 @@ export default function ProjectsSection() {
           if (index < activeIndex) {
             gsap.set(card, { yPercent: -250, rotateX: 35, scale: 1 });
           } else if (index === activeIndex) {
-            // Because our scroll length exactly matches the number of transitions...
-            // When progress is 1.0, activeIndex will technically be totalCards - 1,
-            // but segment progress will be 0 (from the Math.min clamp).
-            // This cleanly pins the final card in the center.
             if (index === totalCards - 1) {
               gsap.set(card, { yPercent: -50, rotationX: 0, scale: 1 });
             } else {
@@ -259,22 +243,22 @@ export default function ProjectsSection() {
       id="Projects"
       ref={sectionRef}
       className="relative w-full h-svh overflow-hidden"
-      style={{ perspective: "900px", background: "#111" }}
+      style={{ perspective: "1200px", background: "#111" }}
     >
       {/* Header */}
-      <div className="absolute top-10 left-10 z-50 pointer-events-none select-none">
+      <div className="absolute top-6 sm:top-10 left-4 sm:left-10 z-50 pointer-events-none select-none">
         <p
           style={{ fontFamily: "'DM Mono', monospace", letterSpacing: "0.3em" }}
           className="text-white/30 text-xs uppercase mb-1"
         >
           Selected Work
         </p>
-        <h2 className="text-white text-4xl font-display font-bold uppercase leading-none">
+        <h2 className="text-white text-2xl sm:text-4xl font-display font-bold uppercase leading-none">
           Projects
         </h2>
       </div>
 
-      <div className="absolute top-10 right-10 z-50 pointer-events-none select-none">
+      <div className="absolute top-6 sm:top-10 right-4 sm:right-10 z-50 pointer-events-none select-none">
         <p
           style={{ fontFamily: "'DM Mono', monospace" }}
           className="text-white/20 text-xs flex items-center gap-2"
@@ -295,86 +279,86 @@ export default function ProjectsSection() {
             if (el) cardRefs.current[index] = el;
           }}
           style={{ zIndex: projects.length - index }}
-          // wider: 95vw / max-w-325  |  taller: 72vh / min-h-130
-          className="absolute group top-1/2 left-1/2 w-[95vw] max-w-325 h-[72vh] min-h-130 origin-bottom will-change-transform"
+          className="absolute group top-1/2 left-1/2 w-[80%] origin-bottom will-change-transform max-[1000px]:w-[calc(100%-1.5rem)] sm:max-[1000px]:w-[calc(100%-2.5rem)]"
+          /* ─── HEIGHT STRATEGY ───────────────────────────────────────────────
+             Mobile  (<640px):  auto height so all content is never cut off
+             Tablet  (sm–md):   min-h-[88vh] so the card fills most of screen
+             Desktop (md+):     fixed 78vh — original design intent
+          ─────────────────────────────────────────────────────────────────── */
+          // style={{ zIndex: projects.length - index, height: "auto" }}
         >
-          {/* Card body — browser window style */}
-          <div
+          {/* Wrapper that controls height per breakpoint */}
+          <div className="h-auto sm:h-[84vh] md:h-[78vh] min-h-130"
             style={{
-              width: "100%",
-              height: "100%",
               background: project.bg,
               position: "relative",
               overflow: "hidden",
               display: "flex",
               flexDirection: "column",
-              borderRadius: "24px", // standard clean radius
-              border: `1px solid ${project.accent}18`, // perfectly applies now
+              borderRadius: "24px",
+              border: `1px solid ${project.accent}18`,
+              width: "100%",
             }}
           >
-            {/* macOS Browser Header */}
+            {/* ── macOS Browser Header ───────────────────────────────────── */}
             <div
-              className="relative z-40 flex items-center justify-between px-5 py-3 border-b"
+              className="relative z-40 flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 border-b shrink-0"
               style={{
                 borderColor: `${project.accent}18`,
                 background: "#111111",
               }}
             >
-              {/* Traffic Lights */}
-              <div className="flex gap-2 w-20">
-                <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity duration-200">
-                  {/* Close */}
-                  <div className="w-3 h-3 rounded-full bg-[#ff5f56] flex items-center justify-center"></div>
-
-                  {/* Minimize */}
-                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e] flex items-center justify-center"></div>
-
-                  {/* Maximize */}
-                  <div className="w-3 h-3 rounded-full bg-[#27c93f] flex items-center justify-center"></div>
+              {/* Traffic Lights + Nav */}
+              <div className="flex gap-2 items-center w-auto sm:w-20 shrink-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 opacity-70 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56]" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e]" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27c93f]" />
                 </div>
-                {/* Browser Navigation Arrows */}
                 <div className="hidden sm:flex items-center gap-2 text-white/30 ml-2">
-                  <ChevronLeft
-                    size={16}
-                    className="hover:text-white/60 cursor-pointer transition-colors"
-                  />
+                  <ChevronLeft size={16} className="hover:text-white/60 cursor-pointer transition-colors" />
                   <ChevronRight size={16} className="opacity-40" />
-                  <RotateCw
-                    size={14}
-                    className="ml-1 hover:text-white/60 cursor-pointer transition-colors"
-                  />
+                  <RotateCw size={14} className="ml-1 hover:text-white/60 cursor-pointer transition-colors" />
                 </div>
               </div>
 
-              {/* URL Bar */}
+              {/* URL Bar — hidden on xs, visible sm+ */}
               <div
-                className="flex-1 flex  items-center justify-center gap-2 px-4 py-1.5 rounded-md font-mono text-xs max-w-sm mx-4"
+                className="hidden sm:flex flex-1 items-center justify-center gap-2 px-4 py-1.5 rounded-md font-mono text-xs max-w-sm mx-4 min-w-0"
                 style={{
                   background: "rgba(255,255,255,0.03)",
                   border: "1px solid rgba(255,255,255,0.05)",
                   color: "rgba(255,255,255,0.4)",
                 }}
               >
-                <Lock size={10} className="opacity-50" />
-                <span>{project.live.replace("https://", "")}</span>
+                <Lock size={10} className="opacity-50 shrink-0" />
+                <span className="truncate">{project.live.replace("https://", "")}</span>
               </div>
 
-              {/* Status Badge */}
+              {/* Mobile: project title in center instead of URL bar */}
+              <div
+                className="flex sm:hidden flex-1 items-center justify-center px-2 min-w-0"
+              >
+                <span
+                  className="truncate text-[10px] font-mono"
+                  style={{ color: `${project.accent}70` }}
+                >
+                  {project.title}
+                </span>
+              </div>
+
+              {/* Status Badge — hidden on mobile */}
               {(() => {
                 const s = STATUS_CONFIG[project.status];
                 return (
                   <div
-                    className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full border font-mono text-[10px] tracking-wide ${s.text} ${s.border} ${s.bg}`}
+                    className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full border font-mono text-[10px] tracking-wide shrink-0 ${s.text} ${s.border} ${s.bg}`}
                   >
                     <span className="relative flex h-1.5 w-1.5 shrink-0">
                       {project.status !== "archived" && (
-                        <span
-                          className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${s.ping}`}
-                        />
+                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${s.ping}`} />
                       )}
-                      <span
-                        className={`relative inline-flex rounded-full h-1.5 w-1.5 ${s.dot}`}
-                      />
+                      <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${s.dot}`} />
                     </span>
                     {s.label}
                   </div>
@@ -382,17 +366,17 @@ export default function ProjectsSection() {
               })()}
 
               {/* Action Buttons */}
-              <div className="flex gap-2 w-20 justify-end z-40">
+              <div className="flex gap-1.5 sm:gap-2 w-auto sm:w-20 justify-end z-40 shrink-0">
                 {[
                   {
                     href: project.repo,
                     label: "GitHub",
-                    icon: <Github size={16} strokeWidth={1.8} />,
+                    icon: <Github size={14} strokeWidth={1.8} />,
                   },
                   {
                     href: project.live,
                     label: "Live",
-                    icon: <ArrowUpRight size={16} strokeWidth={1.8} />,
+                    icon: <ArrowUpRight size={14} strokeWidth={1.8} />,
                   },
                 ].map(({ href, label, icon }) => (
                   <a
@@ -404,8 +388,8 @@ export default function ProjectsSection() {
                     onClick={(e) => e.stopPropagation()}
                     className="apple-border-shine"
                     style={{
-                      width: 35,
-                      height: 35,
+                      width: 28,
+                      height: 28,
                       borderRadius: "50%",
                       color: `${project.accent}60`,
                       display: "flex",
@@ -437,38 +421,14 @@ export default function ProjectsSection() {
               </div>
             </div>
 
-            {/* Clickable Content Body */}
+            {/* ── Card Body ─────────────────────────────────────────────── */}
             <a
               href={project.live}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 relative block outline-none"
-              style={{ textDecoration: "none" }}
+              className="flex-1 relative flex flex-col outline-none overflow-hidden"
+              style={{ textDecoration: "none", minHeight: 0 }}
             >
-              {/* CSS plastic sheen */}
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  zIndex: 20,
-                  pointerEvents: "none",
-                  background: `
-                    linear-gradient(
-                      118deg,
-                      transparent 18%,
-                      rgba(255,255,255,0.04) 40%,
-                      rgba(255,255,255,0.085) 17%,
-                      rgba(255,255,255,0.025) 44%,
-                      transparent 54%,
-                      rgba(255,255,255,0.045) 69%,
-                      rgba(255,255,255,0.015) 72%,
-                      transparent 82%
-                    )
-                  `,
-                }}
-              />
-              {/* Specular top-left highlight */}
               <div
                 aria-hidden
                 style={{
@@ -483,7 +443,6 @@ export default function ProjectsSection() {
                     "radial-gradient(ellipse at 20% 35%, rgba(255,255,255,0.055) 0%, transparent 70%)",
                 }}
               />
-              {/* Inner border shimmer (only sides & bottom now, top is handled by header) */}
               <div
                 aria-hidden
                 style={{
@@ -495,52 +454,76 @@ export default function ProjectsSection() {
                 }}
               />
 
-              {/* Content */}
+              {/* ── Responsive Layout ───────────────────────────────────── */}
               <div
-                style={{ position: "relative", zIndex: 30, height: "100%" }}
-                className="flex flex-col md:flex-row justify-between p-10 md:p-14 gap-8"
+                style={{ position: "relative", zIndex: 30 }}
+                className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden min-h-0"
               >
-                {/* Left Side: Text Details */}
-                <div className="flex flex-col justify-between h-full w-full md:w-1/2">
+
+                {/* ── MOBILE LAYOUT: Content on top, mockup at bottom ───── */}
+                <div className="flex flex-col p-4 sm:p-6 md:p-14 w-full h-full flex-1 md:w-3/5 lg:w-1/2 order-1 md:order-0 min-h-0">
+                  {/* Number */}
                   <span
                     style={{
                       fontFamily: "'DM Mono', monospace",
                       color: project.accent,
                       opacity: 0.45,
                     }}
-                    className="text-xs tracking-[0.3em] uppercase mb-4 md:mb-0"
+                    className="text-xs tracking-[0.3em] uppercase mb-2 md:mb-4"
                   >
                     {project.num}
                   </span>
 
-                  <div className="flex-1 mt-4 md:mt-0">
-                    <h3
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        color: "#fff",
-                      }}
-                      className="text-5xl md:text-6xl font-bold uppercase leading-none mb-5"
-                    >
-                      {project.title}
-                    </h3>
-                    <div
-                      className="w-12 h-px mb-5"
-                      style={{
-                        background: `linear-gradient(90deg, ${project.accent}, transparent)`,
-                      }}
-                    />
-                    <p
-                      style={{
-                        fontFamily: "'DM Mono', monospace",
-                        color: "rgba(255,255,255,0.38)",
-                      }}
-                      className="text-xs leading-relaxed max-w-lg mb-8 md:mb-0"
-                    >
-                      {project.description}
-                    </p>
-                  </div>
+                  {/* Status badge — mobile only, inline */}
+                  {(() => {
+                    const s = STATUS_CONFIG[project.status];
+                    return (
+                      <div
+                        className={`md:hidden inline-flex w-fit items-center gap-1.5 px-2.5 py-1 rounded-full border font-mono text-[9px] tracking-wide mb-3 ${s.text} ${s.border} ${s.bg}`}
+                      >
+                        <span className="relative flex h-1.5 w-1.5 shrink-0">
+                          {project.status !== "archived" && (
+                            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${s.ping}`} />
+                          )}
+                          <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${s.dot}`} />
+                        </span>
+                        {s.label}
+                      </div>
+                    );
+                  })()}
 
-                  <div className="flex flex-wrap gap-2 mt-auto">
+                  {/* Title */}
+                  <h3
+                    style={{
+                      fontFamily: "'Playfair Display', serif",
+                      color: "#fff",
+                    }}
+                    className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase leading-none mb-3 sm:mb-4"
+                  >
+                    {project.title}
+                  </h3>
+
+                  {/* Divider */}
+                  <div
+                    className="w-10 sm:w-12 h-px mb-3 sm:mb-5"
+                    style={{
+                      background: `linear-gradient(90deg, ${project.accent}, transparent)`,
+                    }}
+                  />
+
+                  {/* Description */}
+                  <p
+                    style={{
+                      fontFamily: "'DM Mono', monospace",
+                      color: "rgba(255,255,255,0.38)",
+                    }}
+                    className="text-[10px] xs:text-[11px] sm:text-xs leading-relaxed mb-4 sm:mb-6"
+                  >
+                    {project.description}
+                  </p>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
                     {project.tags.map((tag) => (
                       <span
                         key={tag.name}
@@ -549,12 +532,12 @@ export default function ProjectsSection() {
                           color: `${project.accent}70`,
                           background: `${project.accent}08`,
                         }}
-                        className="px-3 py-2 flex items-center gap-1.5 text-[10px] tracking-wider uppercase rounded-full apple-border-shine duration-700 transition-all"
+                        className="px-2 sm:px-2.5 py-1 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[10px] tracking-wider uppercase rounded-full apple-border-shine duration-700 transition-all"
                       >
                         <img
                           src={tag.icon}
                           alt={`${tag.name} icon`}
-                          className="w-3 h-3 object-contain opacity-70"
+                          className="w-2.5 h-2.5 sm:w-3 sm:h-3 object-contain opacity-70"
                           loading="lazy"
                         />
                         {tag.name}
@@ -563,24 +546,40 @@ export default function ProjectsSection() {
                   </div>
                 </div>
 
-                {/* Right Side: Mockup Image */}
-                {project.image && (
-                  <div className="w-[25%]">
-                    <img
+                {/* ── DESKTOP Mockup: right side, hidden on mobile ───────── */}
+                <div
+                  className="hidden md:flex flex-1 overflow-hidden relative"
+                  style={{
+                    background: `radial-gradient(ellipse at 60% 50%, ${project.accent}06 0%, transparent 70%)`,
+                  }}
+                >
+                  {project.image && (
+                    <Image
                       src={project.image}
                       alt={`${project.title} mockup`}
-                      className="object-cover w-full h-full transform scale-110 transition-transform duration-1000 origin-center"
+                      fill
+                      sizes="(max-width: 1200px) 45vw, 35vw"
+                      className="object-contain p-4 lg:p-6 transition-transform duration-1000"
                     />
-                  </div>
-                )}
+                  )}
+                  {/* Fade edge on left */}
+                  <div
+                    className="absolute inset-y-0 left-0 w-16 z-10 pointer-events-none"
+                    style={{
+                      background: `linear-gradient(to right, ${project.bg}, transparent)`,
+                    }}
+                  />
+                </div>
+
               </div>
             </a>
           </div>
         </div>
       ))}
 
+      {/* Bottom fade */}
       <div
-        className="absolute bottom-0 left-0 w-full h-32 pointer-events-none z-50"
+        className="absolute bottom-0 left-0 w-full h-24 sm:h-32 pointer-events-none z-50"
         style={{ background: "linear-gradient(to top, #111, transparent)" }}
       />
     </section>

@@ -1,6 +1,7 @@
 "use client";
-import { ArrowDown, ArrowRight, Github, Linkedin, Twitter } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { SOCIAL_LINKS_PUBLIC } from "@/src/constants/socialLinks";
 
 function HeroSection() {
 
@@ -9,7 +10,7 @@ function HeroSection() {
   return (
     <section
       id="Home"
-      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#171717]"
+      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#171717] px-4 sm:px-6"
     >
       {/* Ambient glow orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -35,9 +36,9 @@ function HeroSection() {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-8 flex flex-col items-center text-center gap-8">
+      <div className="relative z-10 max-w-7xl mx-auto pt-28 sm:pt-32 pb-16 flex flex-col items-center text-center gap-6 sm:gap-8">
         {/* Availability badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full apple-border-shine bg-white/5 backdrop-blur-sm text-sm font-body text-white/60">
+        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full apple-border-shine bg-white/5 backdrop-blur-sm text-xs sm:text-sm font-body text-white/60">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute shadow-accent-soft shadow-2xl inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
@@ -47,7 +48,7 @@ function HeroSection() {
 
         {/* Name */}
         <div className="flex flex-col items-center gap-2">
-          <h1 className="font-display font-bold uppercase text-7xl md:text-[9rem] leading-[0.85] tracking-tight text-white">
+          <h1 className="font-display font-bold uppercase text-[3rem] sm:text-7xl md:text-[9rem] leading-[0.85] tracking-tight text-white">
             Aditya
             <br />
             <span className="text-amber-200">Kumar</span>
@@ -55,24 +56,24 @@ function HeroSection() {
         </div>
 
         {/* Role */}
-        <p className="font-display uppercase text-lg md:text-2xl text-white/40 tracking-[0.25em]">
+        <p className="font-display uppercase text-sm sm:text-lg md:text-2xl text-white/40 tracking-[0.2em] sm:tracking-[0.25em]">
           Full Stack Developer
         </p>
 
         {/* Description */}
-        <p className="max-w-lg font-body text-white/50 text-base md:text-lg leading-relaxed">
+        <p className="max-w-lg font-body text-white/50 text-sm sm:text-base md:text-lg leading-relaxed">
           I craft high-performance web applications with clean architecture and
           obsessive attention to detail — from <u>pixel-perfect</u> UIs to scalable
           backends.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex items-center gap-4 mt-2">
+        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-2 w-full sm:w-auto">
           <Link
             href="#Projects"
             className="
               inline-flex items-center justify-center
-              px-7 py-3 rounded-full font-body font-medium tracking-wide
+              w-full sm:w-auto px-7 py-3 rounded-full font-body font-medium tracking-wide
               bg-amber-200 text-[#171717]
               transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]
               hover:bg-amber-100
@@ -95,7 +96,7 @@ function HeroSection() {
             href="#Contact"
             className="
               inline-flex items-center justify-center
-              px-7 py-3 rounded-full font-body font-medium tracking-wide
+              w-full sm:w-auto px-7 py-3 rounded-full font-body font-medium tracking-wide
               text-amber-50
               transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]
               backdrop-blur-xl
@@ -122,17 +123,13 @@ function HeroSection() {
 
         {/* Socials */}
         <div className="flex items-center gap-5 mt-2">
-          {[
-            { icon: Github, href: "https://github.com", label: "GitHub" },
-            { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-            { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
-          ].map(({ icon: Icon, href, label }) => (
+          {SOCIAL_LINKS_PUBLIC.map(({ icon: Icon, url, name }) => (
             <a
-              key={label}
-              href={href}
+              key={name}
+              href={url}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={label}
+              aria-label={name}
               className="
                 p-2.5 rounded-full
                 text-white/30
@@ -148,7 +145,7 @@ function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20 animate-bounce">
+      <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20 animate-bounce">
         <span className="font-body text-xs tracking-widest uppercase">
           Scroll
         </span>
