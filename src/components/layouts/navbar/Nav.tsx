@@ -6,7 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type MenuLink   = { name: string; url: string };
+type MenuLink = {
+  name: string;
+  url: string;
+  newTab?: boolean;
+};
 
 const ITEM_COLORS = [
   "#F2A900",
@@ -25,6 +29,7 @@ const MENU_LINKS: MenuLink[] = [
   { name: "About",        url: "#About" },
   { name: "Skills",       url: "#Skills" },
   { name: "Contact",      url: "#Contact" },
+  { name: "Resume",       url: "/Aditya_FullStack.pdf", newTab: true },
 ];
 
 const DESKTOP_NAV_ITEMS = [
@@ -191,30 +196,57 @@ export const Nav = () => {
             <ul className="flex flex-col">
               {MENU_LINKS.map((link, idx) => (
                 <li key={link.name}>
-                  <button
-                    onClick={() => { router.push(link.url); close(); }}
-                    className="group w-full flex items-center gap-4 py-3.5 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
-                    style={{
-                      transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
-                      opacity:    isMenuOpen ? 1 : 0,
-                      transform:  isMenuOpen ? "translateX(0)" : "translateX(12px)",
-                      transition: "opacity 0.3s, transform 0.3s, padding 0.15s",
-                    }}
-                  >
-                    {/* Colored dot — matches screenshot size */}
-                    <span
-                      className="w-[9px] h-[9px] rounded-full flex-shrink-0"
-                      style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }}
-                    />
-                    {/* Link text */}
-                    <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">
-                      {link.name}
-                    </span>
-                    {/* Arrow — muted like screenshot */}
-                    <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">
-                      →
-                    </span>
-                  </button>
+                  {link.newTab ? (
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={close}
+                      className="group w-full flex items-center gap-4 py-3.5 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
+                      style={{
+                        transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
+                        opacity: isMenuOpen ? 1 : 0,
+                        transform: isMenuOpen ? "translateX(0)" : "translateX(12px)",
+                        transition: "opacity 0.3s, transform 0.3s, padding 0.15s",
+                      }}
+                    >
+                      <span
+                        className="w-[9px] h-[9px] rounded-full flex-shrink-0"
+                        style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }}
+                      />
+                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">
+                        {link.name}
+                      </span>
+                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">
+                        ↗
+                      </span>
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        router.push(link.url);
+                        close();
+                      }}
+                      className="group w-full flex items-center gap-4 py-3.5 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
+                      style={{
+                        transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
+                        opacity: isMenuOpen ? 1 : 0,
+                        transform: isMenuOpen ? "translateX(0)" : "translateX(12px)",
+                        transition: "opacity 0.3s, transform 0.3s, padding 0.15s",
+                      }}
+                    >
+                      <span
+                        className="w-[9px] h-[9px] rounded-full flex-shrink-0"
+                        style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }}
+                      />
+                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">
+                        {link.name}
+                      </span>
+                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">
+                        →
+                      </span>
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

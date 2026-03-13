@@ -95,7 +95,7 @@ function AboutSection() {
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3">
               <a
-                href="/resume.pdf"
+                href="/Aditya_FullStack.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
