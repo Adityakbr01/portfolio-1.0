@@ -3,8 +3,8 @@
 import { CONTACT_EMAIL, SOCIAL_LINKS_PUBLIC } from "@/src/constants/socialLinks";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useLenis } from "lenis/react";
 
 type MenuLink = {
   name: string;
@@ -46,12 +46,38 @@ export const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("Home");
-  const router = useRouter();
+
+  // ── Get lenis instance so we can call scrollTo directly ──────────────────
+  // This is the fix: instead of router.push("#id") which Next.js handles as
+  // a route change (not a scroll), we call lenis.scrollTo(element) directly
+  // so Lenis easing and ScrollTrigger stay fully in sync.
+  const lenis = useLenis();
+
+  // ── Smooth scroll helper ──────────────────────────────────────────────────
+  const scrollTo = (hash: string) => {
+    if (!hash.startsWith("#")) return;
+    const target = document.querySelector(hash);
+    if (!target) return;
+    lenis?.scrollTo(target as HTMLElement, {
+      offset: 0,
+      duration: 1.4,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+  };
 
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [isMenuOpen]);
+    if (isMenuOpen) {
+      // Stop Lenis so it doesn't intercept touch events behind the menu.
+      // DO NOT set body overflow:hidden — that blocks the menu panel's own
+      // overflow-y-auto scroll on iOS Safari.
+      lenis?.stop();
+    } else {
+      lenis?.start();
+    }
+    return () => {
+      lenis?.start(); // always re-enable on unmount
+    };
+  }, [isMenuOpen, lenis]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -62,15 +88,12 @@ export const Nav = () => {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 8);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 8);
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ── Active section tracker ──
   useEffect(() => {
     const sectionIds = ["Home", "Projects", "About", "Skills"];
     const observers: IntersectionObserver[] = [];
@@ -79,9 +102,7 @@ export const Nav = () => {
       const el = document.getElementById(id);
       if (!el) return;
       const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveSection(id);
-        },
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
         { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
       );
       observer.observe(el);
@@ -92,6 +113,13 @@ export const Nav = () => {
   }, []);
 
   const close = () => setIsMenuOpen(false);
+
+  // ── Unified nav click handler for mobile menu items ───────────────────────
+  const handleNavClick = (url: string) => {
+    close();
+    // Small delay so the menu close animation doesn't fight the scroll
+    requestAnimationFrame(() => scrollTo(url));
+  };
 
   return (
     <>
@@ -109,14 +137,24 @@ export const Nav = () => {
           {/* ── Desktop ── */}
           <div className="hidden lg:flex w-full items-center justify-between font-display">
 
-            <Link href="#Home" className="text-2xl font-bold uppercase">
+            {/* Logo — uses <a> so LenisProvider interceptor handles it */}
+            <a
+              href="#Home"
+              className="text-2xl font-bold uppercase"
+              onClick={(e) => { e.preventDefault(); scrollTo("#Home"); }}
+            >
               Aditya<span className="text-accent-soft">.dev</span>
-            </Link>
+            </a>
+
             <div className="flex items-center gap-10">
               {DESKTOP_NAV_ITEMS.map((item) => {
                 const isActive = activeSection === item.text;
                 return (
-                  <Link key={item.id} href={item.link}>
+                  <a
+                    key={item.id}
+                    href={item.link}
+                    onClick={(e) => { e.preventDefault(); scrollTo(item.link); }}
+                  >
                     <div className="relative overflow-hidden cursor-pointer group h-6">
                       <div
                         className={cn(
@@ -129,19 +167,19 @@ export const Nav = () => {
                       <div className="absolute uppercase inset-0 translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0 text-accent-soft">
                         {item.text}
                       </div>
-                      {/* Active underline dot */}
                       {isActive && (
                         <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent-soft" />
                       )}
                     </div>
-                  </Link>
+                  </a>
                 );
               })}
             </div>
 
-            {/* ── CTA: ripple-fill pill button ── */}
-            <Link
+            {/* CTA */}
+            <a
               href="#Contact"
+              onClick={(e) => { e.preventDefault(); scrollTo("#Contact"); }}
               className="
                 group relative inline-flex items-center justify-center
                 px-6 py-2 rounded-full font-medium tracking-wide
@@ -154,66 +192,34 @@ export const Nav = () => {
                 active:scale-95
               "
             >
-              {/* Ripple — expands from behind the arrow icon */}
-              <span
-                className="
-                  absolute right-2 top-1/2 -translate-y-1/2
-                  w-6 h-6 rounded-full bg-accent-soft
-                  scale-0 transition-transform duration-500 ease-out origin-center
-                  group-hover:scale-[12]
-                  -z-0
-                "
-              />
-
-              {/* Label flips dark as ripple covers it */}
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-accent-soft scale-0 transition-transform duration-500 ease-out origin-center group-hover:scale-[12] -z-0" />
               <span className="relative z-10 transition-colors duration-300 group-hover:text-[#171717] mr-2">
                 Let&apos;s Talk
               </span>
-
-              {/* Arrow icon */}
-              <span
-                className="
-                  relative z-10 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0
-                  bg-white/10 text-accent-light
-                  transition-all duration-300
-                  group-hover:bg-[#171717] group-hover:text-accent-soft
-                  group-hover:rotate-[-45deg]
-                "
-              >
+              <span className="relative z-10 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 bg-white/10 text-accent-light transition-all duration-300 group-hover:bg-[#171717] group-hover:text-accent-soft group-hover:rotate-[-45deg]">
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>
-            </Link>
-
+            </a>
           </div>
 
           {/* ── Mobile top bar ── */}
           <div className="lg:hidden w-full flex items-center justify-between">
-            <button
-              onClick={() => { router.push("#Home"); close(); }}
+            <a
+              href="#Home"
+              onClick={(e) => { e.preventDefault(); scrollTo("#Home"); close(); }}
               className="font-display text-xl font-bold uppercase"
             >
               Aditya<span className="text-accent-soft">.dev</span>
-            </button>
+            </a>
 
-            {/* Hamburger */}
             <button
               className="relative z-[200] w-10 h-10 rounded-full flex flex-col items-center justify-center gap-[5px] transition-all duration-200 hover:bg-white/10 active:scale-95"
               onClick={() => setIsMenuOpen((prev) => !prev)}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
             >
-              <span
-                className={cn(
-                  "block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300",
-                  isMenuOpen ? "rotate-45 translate-y-[3.25px]" : "",
-                )}
-              />
-              <span
-                className={cn(
-                  "block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300",
-                  isMenuOpen ? "-rotate-45 -translate-y-[3.25px]" : "",
-                )}
-              />
+              <span className={cn("block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300", isMenuOpen ? "rotate-45 translate-y-[3.25px]" : "")} />
+              <span className={cn("block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300", isMenuOpen ? "-rotate-45 -translate-y-[3.25px]" : "")} />
             </button>
           </div>
         </div>
@@ -222,8 +228,7 @@ export const Nav = () => {
       {/* ── Dark backdrop ── */}
       <div
         className={cn(
-          "fixed inset-0 z-[110] lg:hidden transition-all duration-300",
-          "bg-black/75",
+          "fixed inset-0 z-[110] lg:hidden transition-all duration-300 bg-black/75",
           isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
         )}
         onClick={close}
@@ -247,19 +252,18 @@ export const Nav = () => {
 
           {/* MENU section */}
           <div>
-            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">
-              Menu
-            </p>
-            <ul className="flex flex-col">
+            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">Menu</p>
+            <ul className="flex flex-col gap-0">
               {MENU_LINKS.map((link, idx) => (
                 <li key={link.name}>
                   {link.newTab ? (
+                    // External links (Resume) — open in new tab as normal
                     <a
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={close}
-                      className="group w-full flex items-center gap-4 py-3.5 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
+                      className="group w-full py-0.5 flex items-center gap-4 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
                       style={{
                         transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
                         opacity: isMenuOpen ? 1 : 0,
@@ -267,21 +271,15 @@ export const Nav = () => {
                         transition: "opacity 0.3s, transform 0.3s, padding 0.15s",
                       }}
                     >
-                      <span
-                        className="w-[9px] h-[9px] rounded-full flex-shrink-0"
-                        style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }}
-                      />
-                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">
-                        {link.name}
-                      </span>
-                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">
-                        ↗
-                      </span>
+                      <span className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }} />
+                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">{link.name}</span>
+                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">↗</span>
                     </a>
                   ) : (
+                    // Internal hash links — use scrollTo via Lenis, NOT router.push
                     <button
-                      onClick={() => { router.push(link.url); close(); }}
-                      className="group w-full flex items-center gap-4 py-3.5 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
+                      onClick={() => handleNavClick(link.url)}
+                      className="group w-full flex items-center py-0.5 gap-4 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
                       style={{
                         transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
                         opacity: isMenuOpen ? 1 : 0,
@@ -289,16 +287,9 @@ export const Nav = () => {
                         transition: "opacity 0.3s, transform 0.3s, padding 0.15s",
                       }}
                     >
-                      <span
-                        className="w-[9px] h-[9px] rounded-full flex-shrink-0"
-                        style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }}
-                      />
-                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">
-                        {link.name}
-                      </span>
-                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">
-                        →
-                      </span>
+                      <span className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }} />
+                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">{link.name}</span>
+                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">→</span>
                     </button>
                   )}
                 </li>
@@ -311,9 +302,7 @@ export const Nav = () => {
 
           {/* SOCIAL section */}
           <div>
-            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">
-              Social
-            </p>
+            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">Social</p>
             <div className="flex flex-wrap gap-2">
               {SOCIAL_LINKS_PUBLIC.map((link, idx) => (
                 <a
@@ -324,7 +313,7 @@ export const Nav = () => {
                   className="px-4 py-2 rounded-full border border-white/15 text-sm text-white/75 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all duration-150 active:scale-95"
                   style={{
                     transitionDelay: isMenuOpen ? `${idx * 40 + 320}ms` : "0ms",
-                    opacity:   isMenuOpen ? 1 : 0,
+                    opacity: isMenuOpen ? 1 : 0,
                     transform: isMenuOpen ? "translateY(0)" : "translateY(6px)",
                     transition: "opacity 0.25s, transform 0.25s, color 0.15s, background 0.15s",
                   }}
@@ -338,14 +327,14 @@ export const Nav = () => {
           {/* Let's Talk CTA */}
           <div
             style={{
-              opacity:   isMenuOpen ? 1 : 0,
+              opacity: isMenuOpen ? 1 : 0,
               transform: isMenuOpen ? "translateY(0)" : "translateY(6px)",
               transitionDelay: isMenuOpen ? "380ms" : "0ms",
               transition: "opacity 0.25s, transform 0.25s",
             }}
           >
             <button
-              onClick={() => { router.push("#Contact"); close(); }}
+              onClick={() => handleNavClick("#Contact")}
               className="group w-full flex items-center gap-2 px-5 py-3 rounded-full border border-[#F2A900]/30 bg-[#F2A900]/10 text-[#F2A900] text-sm font-medium hover:bg-[#F2A900]/18 hover:border-[#F2A900]/50 transition-all duration-200 active:scale-[0.98]"
             >
               Let&apos;s Talk
@@ -357,15 +346,13 @@ export const Nav = () => {
           <div
             className="border-t border-white/7 pt-4"
             style={{
-              opacity:   isMenuOpen ? 1 : 0,
+              opacity: isMenuOpen ? 1 : 0,
               transform: isMenuOpen ? "translateY(0)" : "translateY(4px)",
               transitionDelay: isMenuOpen ? "420ms" : "0ms",
               transition: "opacity 0.25s, transform 0.25s",
             }}
           >
-            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-1.5">
-              Get In Touch
-            </p>
+            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-1.5">Get In Touch</p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="text-sm text-[#F2A900]/80 hover:text-[#F2A900] transition-colors duration-150 hover:underline"
@@ -373,7 +360,6 @@ export const Nav = () => {
               {CONTACT_EMAIL}
             </a>
           </div>
-
         </div>
       </div>
     </>
