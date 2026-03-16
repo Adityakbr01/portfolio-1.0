@@ -172,7 +172,7 @@ function ContactSection() {
   {/* Ripple — expands from behind the arrow icon */}
   <span
     className="
-      absolute right-2 top-1/2 -translate-y-1/2
+      absolute right-[36%] top-1/2 -translate-y-1/2
       w-6 h-6 rounded-full bg-amber-400
       scale-0 transition-transform duration-700 ease-out origin-center
       group-hover:scale-[50]

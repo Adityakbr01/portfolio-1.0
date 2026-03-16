@@ -186,14 +186,14 @@ export const Nav = () => {
                 antialiased overflow-hidden cursor-pointer
                 border border-accent-soft/30
                 bg-accent-soft/10 text-accent-light
-                transition-colors duration-500
+                transition-colors duration-700
                 hover:border-accent-soft/50
                 hover:shadow-[0_0_20px_rgba(242,169,0,0.15)]
                 active:scale-95
               "
             >
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-accent-soft scale-0 transition-transform duration-500 ease-out origin-center group-hover:scale-[12] -z-0" />
-              <span className="relative z-10 transition-colors duration-300 group-hover:text-[#171717] mr-2">
+              <span className="absolute right-[1.4rem] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-accent-soft scale-0 transition-transform duration-500 ease-out origin-center group-hover:scale-[12] -z-0" />
+              <span className="relative z-10 transition-colors duration-500 group-hover:text-[#171717] mr-2">
                 Let&apos;s Talk
               </span>
               <span className="relative z-10 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 bg-white/10 text-accent-light transition-all duration-300 group-hover:bg-[#171717] group-hover:text-accent-soft group-hover:rotate-[-45deg]">

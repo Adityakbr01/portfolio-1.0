@@ -62,6 +62,28 @@ const FRAG_SRC = `
   }
 `;
 
+// ── Parse "rgba(r, g, b, a)" → [r, g, b, a] ─────────────────────────────────
+function parseRgba(rgba: string): [number, number, number, number] {
+  const m = rgba.match(/[\d.]+/g);
+  if (!m || m.length < 3) return [255, 119, 34, 1];
+  return [
+    parseFloat(m[0]),
+    parseFloat(m[1]),
+    parseFloat(m[2]),
+    m[4] !== undefined ? parseFloat(m[3]) : (m[3] !== undefined ? parseFloat(m[3]) : 1),
+  ];
+}
+
+// ── Build a darker, slightly desaturated version of the colour for the shadow
+function shadowColor(rgba: string, depthAlpha = 0.55): string {
+  const [r, g, b] = parseRgba(rgba);
+  // darken by ~60%, clamp to 0
+  const dr = Math.max(0, r * 0.22);
+  const dg = Math.max(0, g * 0.22);
+  const db = Math.max(0, b * 0.22);
+  return `rgba(${dr},${dg},${db},${depthAlpha})`;
+}
+
 export default function DeveloperTextInteractive({
   rippleRadius    = 220,
   rippleAmplitude = 18,
@@ -141,30 +163,61 @@ export default function DeveloperTextInteractive({
     };
 
     const offscreen = document.createElement("canvas");
+
     const buildTexture = () => {
       const W = canvas.width  = canvas.offsetWidth;
       const H = canvas.height = canvas.offsetHeight;
       offscreen.width  = W;
       offscreen.height = H;
-      const oc = offscreen.getContext("2d")!;
-      oc.clearRect(0, 0, W, H);
+
+      const oc   = offscreen.getContext("2d")!;
+      const { rgba: color, xFraction: xf } = cfg.current;
+
       const fontSize = Math.round(W * 0.12);
-      oc.font          = `900 ${fontSize}px Impact, 'Arial Black', sans-serif`;
-      oc.textBaseline  = "middle";
-      // Use xFraction from cfg so it's always current
-      oc.textAlign     = "center";
-      oc.fillStyle     = cfg.current.rgba;
-      oc.fillText(fillText, W * cfg.current.xFraction, H / 2);
+      const cx       = W * xf;
+      const cy       = H / 2;
+
+      oc.clearRect(0, 0, W, H);
+      oc.font        = `900 ${fontSize}px Impact, 'Arial Black', sans-serif`;
+      oc.textAlign   = "center";
+      oc.textBaseline = "middle";
+
+      // ── 3-D extrusion: paint shadow layers back-to-front ──────────────────
+      // Direction: bottom-right (+x, +y) — light source implied top-left.
+      // Each layer steps 1 px further out; alpha fades toward the back.
+      const DEPTH       = 18;           // total extrusion depth in px
+      const shade       = shadowColor(color);
+      const midColor    = shadowColor(color, 0.35); // slightly lighter mid-tone
+
+      // Back-most solid "base" layer — gives the chunky bottom edge
+      for (let i = DEPTH; i >= 1; i--) {
+        // Gradient: darkest at the back, slightly lighter near the face
+        const progress = i / DEPTH;           // 1 at back, ~0 near face
+        oc.fillStyle = progress > 0.5 ? shade : midColor;
+        oc.fillText(fillText, cx + i, cy + i * 0.6);
+      }
+
+      // ── Bevel highlight: 1-px top-left offset in a near-white tint ────────
+      // Creates the illusion of light catching the top edge of the letter.
+      const [r, g, b, a] = parseRgba(color);
+      const highlightAlpha = Math.min(1, a * 0.45);
+      oc.fillStyle = `rgba(${Math.min(255, r + 80)},${Math.min(255, g + 80)},${Math.min(255, b + 80)},${highlightAlpha})`;
+      oc.fillText(fillText, cx - 1, cy - 1);
+
+      // ── Face (top layer) — the original colour ────────────────────────────
+      oc.fillStyle = color;
+      oc.fillText(fillText, cx, cy);
+
       uploadTexture(offscreen);
       gl.viewport(0, 0, W, H);
     };
+
     buildTexture();
     window.addEventListener("resize", buildTexture);
 
     const raw    = { x: 0.5, y: 0.5 };
     const smooth = { x: 0.5, y: 0.5 };
     const onMove = (e: MouseEvent) => {
-      // Normalize mouse relative to this canvas element
       const rect = canvas.getBoundingClientRect();
       raw.x = (e.clientX - rect.left) / rect.width;
       raw.y = (e.clientY - rect.top)  / rect.height;

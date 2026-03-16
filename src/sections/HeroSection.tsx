@@ -54,7 +54,7 @@ function HeroSection() {
           <h1 className="font-display font-bold uppercase text-[3rem] sm:text-7xl md:text-[9rem] leading-[0.85] tracking-tight text-white">
             Aditya
             <br />
-            <span className="text-amber-200">Kumar</span>
+            <span className="text-amber-200">KABIR</span>
           </h1>
         </div>
 
