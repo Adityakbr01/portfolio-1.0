@@ -21,7 +21,6 @@ const ITEM_COLORS = [
   "#FB923C",
 ];
 
-
 const MENU_LINKS: MenuLink[] = [
   { name: "Home",         url: "#Home" },
   { name: "Projects",     url: "#Projects" },
@@ -46,6 +45,7 @@ function cn(...classes: Array<string | false | null | undefined>) {
 export const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("Home");
   const router = useRouter();
 
   useEffect(() => {
@@ -65,10 +65,30 @@ export const Nav = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 8);
     };
-
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // ── Active section tracker ──
+  useEffect(() => {
+    const sectionIds = ["Home", "Projects", "About", "Skills"];
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(id);
+        },
+        { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
   }, []);
 
   const close = () => setIsMenuOpen(false);
@@ -86,43 +106,87 @@ export const Nav = () => {
       >
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex items-center justify-between">
 
-          {/* Desktop */}
+          {/* ── Desktop ── */}
           <div className="hidden lg:flex w-full items-center justify-between font-display">
+
             <Link href="#Home" className="text-2xl font-bold uppercase">
               Aditya<span className="text-accent-soft">.dev</span>
             </Link>
             <div className="flex items-center gap-10">
-              {DESKTOP_NAV_ITEMS.map((item) => (
-                <Link key={item.id} href={item.link}>
-                  <div className="relative overflow-hidden cursor-pointer group h-6">
-                    <div className="transition-transform uppercase duration-300 ease-out group-hover:-translate-y-full">
-                      {item.text}
+              {DESKTOP_NAV_ITEMS.map((item) => {
+                const isActive = activeSection === item.text;
+                return (
+                  <Link key={item.id} href={item.link}>
+                    <div className="relative overflow-hidden cursor-pointer group h-6">
+                      <div
+                        className={cn(
+                          "transition-transform uppercase duration-300 ease-out group-hover:-translate-y-full",
+                          isActive ? "text-accent-soft" : ""
+                        )}
+                      >
+                        {item.text}
+                      </div>
+                      <div className="absolute uppercase inset-0 translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0 text-accent-soft">
+                        {item.text}
+                      </div>
+                      {/* Active underline dot */}
+                      {isActive && (
+                        <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent-soft" />
+                      )}
                     </div>
-                    <div className="absolute uppercase inset-0 translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0 text-accent-soft">
-                      {item.text}
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
+
+            {/* ── CTA: ripple-fill pill button ── */}
             <Link
               href="#Contact"
               className="
                 group relative inline-flex items-center justify-center
-                px-6 py-2 rounded-full text-accent-light font-medium tracking-wide
-                antialiased transition-all duration-300 backdrop-blur-xl
-                bg-linear-to-b from-accent-soft/30 to-accent-soft/10
-                apple-border-shine
-                hover:from-accent-soft/40 hover:to-accent-soft/20
-                hover:border-accent-soft/40 active:scale-95
+                px-6 py-2 rounded-full font-medium tracking-wide
+                antialiased overflow-hidden cursor-pointer
+                border border-accent-soft/30
+                bg-accent-soft/10 text-accent-light
+                transition-colors duration-500
+                hover:border-accent-soft/50
+                hover:shadow-[0_0_20px_rgba(242,169,0,0.15)]
+                active:scale-95
               "
             >
-              Let&apos;s Talk
-              <ArrowRight className="w-4 h-4 ml-2 transition-all duration-300 group-hover:-rotate-45" />
+              {/* Ripple — expands from behind the arrow icon */}
+              <span
+                className="
+                  absolute right-2 top-1/2 -translate-y-1/2
+                  w-6 h-6 rounded-full bg-accent-soft
+                  scale-0 transition-transform duration-500 ease-out origin-center
+                  group-hover:scale-[12]
+                  -z-0
+                "
+              />
+
+              {/* Label flips dark as ripple covers it */}
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-[#171717] mr-2">
+                Let&apos;s Talk
+              </span>
+
+              {/* Arrow icon */}
+              <span
+                className="
+                  relative z-10 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0
+                  bg-white/10 text-accent-light
+                  transition-all duration-300
+                  group-hover:bg-[#171717] group-hover:text-accent-soft
+                  group-hover:rotate-[-45deg]
+                "
+              >
+                <ArrowRight className="w-3.5 h-3.5" />
+              </span>
             </Link>
+
           </div>
 
-          {/* Mobile top bar */}
+          {/* ── Mobile top bar ── */}
           <div className="lg:hidden w-full flex items-center justify-between">
             <button
               onClick={() => { router.push("#Home"); close(); }}
@@ -155,7 +219,7 @@ export const Nav = () => {
         </div>
       </div>
 
-      {/* ── Dark backdrop ── z-[110] */}
+      {/* ── Dark backdrop ── */}
       <div
         className={cn(
           "fixed inset-0 z-[110] lg:hidden transition-all duration-300",
@@ -165,27 +229,20 @@ export const Nav = () => {
         onClick={close}
       />
 
-      {/* ── Floating card panel ── z-[120]
-          Matches screenshot: rounded card, inset from screen edges,
-          starts just below the navbar, does NOT fill full screen height.
-      ── */}
+      {/* ── Floating card panel ── */}
       <div
         className={cn(
           "fixed z-[120] lg:hidden",
-          // position: inset 12px from left/right, starts just below navbar
           "top-[72px] sm:top-[88px] left-3 right-3",
-          // rounded card — exactly like the screenshot
           "rounded-2xl overflow-hidden",
           "bg-[#1a1a1a] border border-white/10",
           "shadow-[0_24px_80px_rgba(0,0,0,0.6)]",
-          // animate: scale + fade from top
           "transition-all duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] origin-top",
           isMenuOpen
             ? "opacity-100 scale-y-100 pointer-events-auto"
             : "opacity-0 scale-y-95 pointer-events-none",
         )}
       >
-        {/* Scrollable inner */}
         <div className="max-h-[calc(100dvh-100px)] overflow-y-auto flex flex-col px-5 sm:px-6 pt-6 pb-5 gap-6">
 
           {/* MENU section */}
@@ -223,10 +280,7 @@ export const Nav = () => {
                     </a>
                   ) : (
                     <button
-                      onClick={() => {
-                        router.push(link.url);
-                        close();
-                      }}
+                      onClick={() => { router.push(link.url); close(); }}
                       className="group w-full flex items-center gap-4 py-3.5 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
                       style={{
                         transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
@@ -281,7 +335,7 @@ export const Nav = () => {
             </div>
           </div>
 
-          {/* Let's Talk CTA — pill style matching screenshot */}
+          {/* Let's Talk CTA */}
           <div
             style={{
               opacity:   isMenuOpen ? 1 : 0,
@@ -299,7 +353,7 @@ export const Nav = () => {
             </button>
           </div>
 
-          {/* GET IN TOUCH footer — pinned at bottom of card */}
+          {/* GET IN TOUCH footer */}
           <div
             className="border-t border-white/7 pt-4"
             style={{

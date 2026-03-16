@@ -25,8 +25,8 @@ function AboutSection() {
     >
       {/* Ambient glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-amber-400/6 blur-[130px]" />
-        <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-400/5 blur-[100px]" />
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-125 h-125 rounded-full bg-amber-400/6 blur-[130px]" />
+        <div className="absolute bottom-0 right-1/4 w-75 h-75 rounded-full bg-orange-400/5 blur-[100px]" />
       </div>
 
       {/* Noise texture */}

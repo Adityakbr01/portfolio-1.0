@@ -1,10 +1,10 @@
 import CustomCursor from "@/src/components/CustomCursor";
-import "lenis/dist/lenis.css";
-import { ReactLenis } from "lenis/react";
+import { Nav } from "@/src/components/layouts/navbar/Nav";
+import LenisProvider from "@/src/components/providers/Lenisprovider";
+import HapticsProvider from "@/src/components/providers/HapticsProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Nav } from "@/src/components/layouts/navbar/Nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,25 +31,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ReactLenis
-          root
-          options={{
-            lerp: 0.1,
-            smoothWheel: true,
-            wheelMultiplier: 0.9,
-            touchMultiplier: 1.5,
-            duration: 1.3,
-            orientation: "vertical",
-            gestureOrientation: "vertical",
-            autoResize: true,
-            overscroll: false,
-            syncTouch: false,
-          }}
-        >
-          <Nav />
-          {children}
-          <CustomCursor />
-        </ReactLenis>
+        {/*
+          LenisProvider wraps ReactLenis AND adds the critical
+          useLenis(ScrollTrigger.update) sync + gsap.ticker.lagSmoothing(0).
+          No other config needed here.
+        */}
+        <LenisProvider>
+          <HapticsProvider>
+            <Nav />
+            {children}
+            <CustomCursor />
+          </HapticsProvider>
+        </LenisProvider>
       </body>
     </html>
   );

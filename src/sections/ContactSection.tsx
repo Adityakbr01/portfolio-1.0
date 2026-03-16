@@ -1,14 +1,29 @@
 "use client";
 import React, { useState } from "react";
 import { SOCIAL_LINKS } from "@/src/constants/socialLinks";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { sendEmailAction } from "@/src/actions/sendEmail";
 
 function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setIsLoading(true);
+    setError(null);
+
+    const result = await sendEmailAction(form);
+
+    setIsLoading(false);
+
+    if (result.error) {
+      setError(result.error);
+    } else {
+      setSent(true);
+    }
   };
 
   return (
@@ -47,7 +62,8 @@ function ContactSection() {
                 target={id === "email" ? undefined : "_blank"}
                 rel={id === "email" ? undefined : "noopener noreferrer"}
                 className="
-                  group flex items-center gap-4 p-4 rounded-xl
+              
+                  group flex items-center gap-4 p-4 rounded-full
                   border border-white/8 bg-white/3
                   transition-all duration-200
                   hover:border-amber-200/20 hover:bg-white/6 hover:-translate-y-0.5
@@ -139,19 +155,52 @@ function ContactSection() {
                     "
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="
-                    mt-1 w-full px-7 py-3 rounded-full font-body font-medium tracking-wide
-                    bg-amber-200 text-[#171717]
-                    transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]
-                    shadow-[0_0_30px_-5px_rgba(251,191,36,0.4)]
-                    hover:bg-amber-100 hover:shadow-[0_0_50px_-5px_rgba(251,191,36,0.6)]
-                    hover:-translate-y-0.5 active:scale-95
-                  "
-                >
-                  Send Message
-                </button>
+                {error && <p className="text-red-400 text-sm font-body">{error}</p>}
+              <button
+  type="submit"
+  disabled={isLoading}
+  className="
+    group cursor-pointer  relative flex items-center justify-center gap-2 mt-1 w-full px-7 py-3 rounded-full
+    font-body font-medium tracking-wide overflow-hidden
+    border border-amber-400/30 bg-amber-400/10 text-amber-200
+    transition-colors duration-500
+    hover:border-amber-400/50
+    hover:shadow-[0_0_20px_rgba(251,191,36,0.15)]
+    active:scale-95 disabled:opacity-70 disabled:pointer-events-none
+  "
+>
+  {/* Ripple — expands from behind the arrow icon */}
+  <span
+    className="
+      absolute right-2 top-1/2 -translate-y-1/2
+      w-6 h-6 rounded-full bg-amber-400
+      scale-0 transition-transform duration-700 ease-out origin-center
+      group-hover:scale-[50]
+      -z-0
+    "
+  />
+
+  {/* Label flips dark as ripple covers it */}
+  <span className="relative z-10 transition-colors duration-300 group-hover:text-[#171717] mr-2">
+    {isLoading ? "Sending" : "Send Message"}
+  </span>
+
+  {/* Arrow / Spinner icon */}
+  <span
+    className="
+      relative z-10 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0
+      bg-white/10 text-amber-200
+      transition-all duration-700
+      group-hover:bg-[#171717] group-hover:text-amber-400
+      group-hover:rotate-[-45deg]
+    "
+  >
+    {isLoading
+      ? <Loader2 size={14} className="animate-spin" />
+      : <ArrowRight className="w-3.5 h-3.5" />
+    }
+  </span>
+</button>
               </form>
             )}
           </div>
