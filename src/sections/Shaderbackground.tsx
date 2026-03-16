@@ -1,6 +1,6 @@
 "use client";
-import { useRef, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 // ─── GLSL Shaders ────────────────────────────────────────────────────────────
@@ -176,9 +176,10 @@ export default function ShaderBackground() {
       <Canvas
         camera={{ position: [0, 0, 1], near: 0.1, far: 10 }}
         gl={{ antialias: false, alpha: false }}
-        dpr={[0.1, 1]} // cap pixel-ratio for perf
+        dpr={[0.1, 0.55]} // cap pixel-ratio for perf
         style={{ width: "100%", height: "100%" }}
       >
+        
         <ShaderPlane />
       </Canvas>
     </div>
