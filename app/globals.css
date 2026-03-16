@@ -72,7 +72,7 @@
   --color-accent-light: 45 93% 95%;
 
   --base-1: #3d2fa9;
-  --base-2: #ff7722;
+  --base-2: rgb(255, 119, 34);
   --base-3: #ff3d33;
   --base-4: #785f47;
 }
