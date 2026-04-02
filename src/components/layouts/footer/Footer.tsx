@@ -68,7 +68,7 @@ const MobileWatermark = memo(function MobileWatermark() {
           style={{
             fontSize:    "clamp(3rem, 24vw, 14rem)",
             color,
-            opacity:     0.12 - i * 0.02,
+            opacity:     0.82 - i * 0.3,
             paddingLeft: `${i * 8}vw`,
             letterSpacing: "-0.02em",
             // Promote to its own compositor layer — prevents repaints from

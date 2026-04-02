@@ -2,10 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { Footer } from "./layouts/footer/Footer";
+import HeroSection from "../sections/HeroSection";
 
-const HeroSection = dynamic(() => import("@/src/sections/HeroSection"), {
-  ssr: false,
-});
 const ProjectsSection = dynamic(
   () => import("@/src/sections/ProjectsSection"),
   {

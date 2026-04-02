@@ -374,6 +374,7 @@ export default function ProjectsSection() {
                     <a
                       href={project.repo}
                       target="_blank"
+                      className="apple-border-shine"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       style={{
@@ -391,6 +392,7 @@ export default function ProjectsSection() {
                       <Github size={11} strokeWidth={1.8} />
                     </a>
                     <a
+                      className="apple-border-shine"
                       href={project.live}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -599,6 +601,7 @@ export default function ProjectsSection() {
                         key={label}
                         href={href}
                         target="_blank"
+                        className="apple-border-shine"
                         rel="noopener noreferrer"
                         aria-label={label}
                         onClick={(e) => e.stopPropagation()}
