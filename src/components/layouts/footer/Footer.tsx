@@ -5,11 +5,11 @@ import Link from "next/link";
 import { memo, useEffect, useState } from "react";
 
 const links = [
-  { text: "Home",     href: "#Home"    },
-  { text: "Projects", href: "#Projects"},
-  { text: "About",    href: "#About"   },
-  { text: "Skills",   href: "#Skills"  },
-  { text: "Contact",  href: "#Contact" },
+  { text: "Home", href: "#Home" },
+  { text: "Projects", href: "#Projects" },
+  { text: "About", href: "#About" },
+  { text: "Skills", href: "#Skills" },
+  { text: "Contact", href: "#Contact" },
 ];
 
 // Lazy-load WebGL canvas — never shipped to SSR, code-split from the main bundle
@@ -19,17 +19,32 @@ const DeveloperTextInteractive = dynamic(
 );
 
 const WATERMARK_WORDS = [
-  { fillText: "BUILD", xFraction: 0.25, rgba: "rgba(250,197, 40,1)", color: "#fac528" },
-  { fillText: "SHIP",  xFraction: 0.50, rgba: "rgba(251,120, 30,1)", color: "#fb781e" },
-  { fillText: "LEARN", xFraction: 0.75, rgba: "rgba(248, 80,100,1)", color: "#f85064" },
+  {
+    fillText: "BUILD",
+    xFraction: 0.25,
+    rgba: "rgba(250,197, 40,1)",
+    color: "#fac528",
+  },
+  {
+    fillText: "SHIP",
+    xFraction: 0.5,
+    rgba: "rgba(251,120, 30,1)",
+    color: "#fb781e",
+  },
+  {
+    fillText: "LEARN",
+    xFraction: 0.75,
+    rgba: "rgba(248, 80,100,1)",
+    color: "#f85064",
+  },
 ] as const;
 
 const SHARED_RIPPLE = {
-  rippleRadius:    420,
+  rippleRadius: 420,
   rippleAmplitude: 15,
   rippleFrequency: 0.038,
-  rippleSpeed:     0.1,
-  mouseSmoothing:  0.05,
+  rippleSpeed: 0.1,
+  mouseSmoothing: 0.05,
 };
 
 // ── Memoized watermark rows — never re-render unless props change ─────────────
@@ -66,9 +81,9 @@ const MobileWatermark = memo(function MobileWatermark() {
           key={fillText}
           className="font-display font-black uppercase leading-none"
           style={{
-            fontSize:    "clamp(3rem, 24vw, 14rem)",
+            fontSize: "clamp(3rem, 24vw, 14rem)",
             color,
-            opacity:     0.82 - i * 0.3,
+            opacity: 0.82 - i * 0.3,
             paddingLeft: `${i * 8}vw`,
             letterSpacing: "-0.02em",
             // Promote to its own compositor layer — prevents repaints from
@@ -158,7 +173,8 @@ export function Footer() {
               {CONTACT_EMAIL}
             </a>
             <p className="font-body text-xs text-white/20 leading-relaxed mt-2 max-w-[28ch]">
-              Open to freelance projects, full-time roles, and interesting collabs.
+              Open to freelance projects, full-time roles, and interesting
+              collabs.
             </p>
           </div>
         </div>
@@ -179,8 +195,8 @@ export function Footer() {
 
       {/* ── Watermark ── */}
       {/* null = SSR / hydrating — render nothing to avoid flash */}
-      {isDesktop === true  && <DesktopWatermark />}
-      {isDesktop === false && <MobileWatermark  />}
+      {isDesktop === true && <DesktopWatermark />}
+      {isDesktop === false && <MobileWatermark />}
     </footer>
   );
 }

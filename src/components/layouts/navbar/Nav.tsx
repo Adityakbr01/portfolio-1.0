@@ -5,9 +5,7 @@ import {
   SOCIAL_LINKS_PUBLIC,
 } from "@/src/constants/socialLinks";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useLenis } from "lenis/react";
 
 type MenuLink = {
   name: string;
@@ -50,37 +48,15 @@ export const Nav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("Home");
 
-  // ── Get lenis instance so we can call scrollTo directly ──────────────────
-  // This is the fix: instead of router.push("#id") which Next.js handles as
-  // a route change (not a scroll), we call lenis.scrollTo(element) directly
-  // so Lenis easing and ScrollTrigger stay fully in sync.
-  const lenis = useLenis();
-
-  // ── Smooth scroll helper ──────────────────────────────────────────────────
+  // Native section scroll using CSS `scroll-behavior: smooth` from globals.
   const scrollTo = (hash: string) => {
     if (!hash.startsWith("#")) return;
-    const target = document.querySelector(hash);
+    const target = document.querySelector<HTMLElement>(hash);
     if (!target) return;
-    lenis?.scrollTo(target as HTMLElement, {
-      offset: 0,
-      duration: 1.4,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-  };
 
-  useEffect(() => {
-    if (isMenuOpen) {
-      // Stop Lenis so it doesn't intercept touch events behind the menu.
-      // DO NOT set body overflow:hidden — that blocks the menu panel's own
-      // overflow-y-auto scroll on iOS Safari.
-      lenis?.stop();
-    } else {
-      lenis?.start();
-    }
-    return () => {
-      lenis?.start(); // always re-enable on unmount
-    };
-  }, [isMenuOpen, lenis]);
+    target.scrollIntoView({ block: "start" });
+    window.history.replaceState(null, "", hash);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -140,7 +116,7 @@ export const Nav = () => {
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex items-center justify-between">
           {/* ── Desktop ── */}
           <div className="hidden lg:flex w-full items-center justify-between font-display">
-            {/* Logo — uses <a> so LenisProvider interceptor handles it */}
+            {/* Logo */}
             <a
               href="#Home"
               className="text-2xl font-bold uppercase"
@@ -319,7 +295,7 @@ export const Nav = () => {
                       </span>
                     </a>
                   ) : (
-                    // Internal hash links — use scrollTo via Lenis, NOT router.push
+                    // Internal hash links.
                     <button
                       onClick={() => handleNavClick(link.url)}
                       className="group w-full flex items-center py-0.5 gap-4 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
