@@ -18,8 +18,19 @@ export const PROJECTS = [
     title: "AI Social Media Post Handler",
     description:
       "A platform that allows users to create and publish posts across multiple social media platforms with one click.",
-    tech: ["TypeScript", "Next.js", "Bun", "PostgreSQL", "Docker", "AWS", "OpenAI API", "Redis", "Nginx"],
-    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=900&h=600&fit=crop",
+    tech: [
+      "TypeScript",
+      "Next.js",
+      "Bun",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+      "OpenAI API",
+      "Redis",
+      "Nginx",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=900&h=600&fit=crop",
     color: "#3d2fa9",
     zIndex: 5,
   },
@@ -29,8 +40,18 @@ export const PROJECTS = [
     title: "Student Micro Task Earning App",
     description:
       "A mobile app where students can earn money by completing simple tasks like watching videos, filling forms, and referrals.",
-    tech: ["React Native", "Expo", "TypeScript", "Node.js", "PostgreSQL", "Docker", "AWS", "Nginx"],
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=900&h=600&fit=crop",
+    tech: [
+      "React Native",
+      "Expo",
+      "TypeScript",
+      "Node.js",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+      "Nginx",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=900&h=600&fit=crop",
     color: "#ff7722",
     zIndex: 4,
   },
@@ -40,8 +61,19 @@ export const PROJECTS = [
     title: "Perplexity / ChatGPT Style AI App",
     description:
       "An AI-powered app that answers questions with intelligent sources using RAG and vector search.",
-    tech: ["Next.js", "React Native", "TypeScript", "pgVector", "LangChain", "OpenAI", "Docker", "AWS", "Nginx"],
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=900&h=600&fit=crop",
+    tech: [
+      "Next.js",
+      "React Native",
+      "TypeScript",
+      "pgVector",
+      "LangChain",
+      "OpenAI",
+      "Docker",
+      "AWS",
+      "Nginx",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=900&h=600&fit=crop",
     color: "#ff3d33",
     zIndex: 3,
   },
@@ -51,8 +83,18 @@ export const PROJECTS = [
     title: "Scalable E-Commerce Platform",
     description:
       "A scalable e-commerce platform with authentication, product management, order tracking, and payment integration.",
-    tech: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Docker", "AWS", "Redis", "Nginx"],
-    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&h=600&fit=crop",
+    tech: [
+      "Next.js",
+      "TypeScript",
+      "PostgreSQL",
+      "Prisma",
+      "Docker",
+      "AWS",
+      "Redis",
+      "Nginx",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&h=600&fit=crop",
     color: "#785f47",
     zIndex: 2,
   },
@@ -116,7 +158,7 @@ export default function FeatureProjects() {
               });
             }
           } else {
-            const effectiveBehind = (index - activeIndex) - segProgress;
+            const effectiveBehind = index - activeIndex - segProgress;
             gsap.set(card, {
               yPercent: -50 + effectiveBehind * CARD_Y_OFFSET,
               rotationX: 0,
@@ -149,7 +191,9 @@ export default function FeatureProjects() {
           <div
             key={project.id}
             id={project.id}
-            ref={(el) => { if (el) cardRefs.current[index] = el; }}
+            ref={(el) => {
+              if (el) cardRefs.current[index] = el;
+            }}
             style={{
               backgroundColor: project.color,
               zIndex: project.zIndex,
@@ -167,7 +211,10 @@ export default function FeatureProjects() {
           >
             {/* ── MOBILE layout (<1000px) ─── */}
             <div className="min-[1000px]:hidden flex flex-col h-full">
-              <div className="relative w-full shrink-0" style={{ height: "50%" }}>
+              <div
+                className="relative w-full shrink-0"
+                style={{ height: "50%" }}
+              >
                 <Image
                   src={project.image}
                   alt={`${project.title} preview`}
@@ -232,19 +279,34 @@ export default function FeatureProjects() {
             {/* ── DESKTOP layout (≥1000px) ─── */}
             <div className="hidden min-[1000px]:flex h-full items-center gap-4 p-10">
               <div className="flex-1 h-full flex flex-col p-2">
-                <p className="text-xs tracking-[0.2em] uppercase opacity-60">{project.tag}</p>
-                <h1 className="mt-4 font-display text-3xl md:text-5xl leading-none uppercase">{project.title}</h1>
-                <p className="mt-4 text-sm md:text-base text-white/85 leading-relaxed max-w-2xl">{project.description}</p>
+                <p className="text-xs tracking-[0.2em] uppercase opacity-60">
+                  {project.tag}
+                </p>
+                <h1 className="mt-4 font-display text-3xl md:text-5xl leading-none uppercase">
+                  {project.title}
+                </h1>
+                <p className="mt-4 text-sm md:text-base text-white/85 leading-relaxed max-w-2xl">
+                  {project.description}
+                </p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {project.tech.map((item) => (
-                    <span key={item} className="px-3 py-1 text-xs tracking-wide uppercase rounded-full bg-white/10 border border-white/20">
+                    <span
+                      key={item}
+                      className="px-3 py-1 text-xs tracking-wide uppercase rounded-full bg-white/10 border border-white/20"
+                    >
                       {item}
                     </span>
                   ))}
                 </div>
               </div>
               <div className="relative flex-1 h-full rounded-xl overflow-hidden">
-                <Image src={project.image} alt={`${project.title} preview`} fill className="object-cover" sizes="50vw" />
+                <Image
+                  src={project.image}
+                  alt={`${project.title} preview`}
+                  fill
+                  className="object-cover"
+                  sizes="50vw"
+                />
               </div>
             </div>
           </div>

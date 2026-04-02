@@ -1,6 +1,4 @@
-import CustomCursor from "@/src/components/CustomCursor";
 import { Nav } from "@/src/components/layouts/navbar/Nav";
-import LenisProvider from "@/src/components/providers/Lenisprovider";
 import HapticsProvider from "@/src/components/providers/HapticsProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -31,18 +29,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/*
-          LenisProvider wraps ReactLenis AND adds the critical
-          useLenis(ScrollTrigger.update) sync + gsap.ticker.lagSmoothing(0).
-          No other config needed here.
-        */}
-        <LenisProvider>
-          <HapticsProvider>
-            <Nav />
-            {children}
-            <CustomCursor />
-          </HapticsProvider>
-        </LenisProvider>
+        {/* <LenisProvider> */}
+        <HapticsProvider>
+          <Nav />
+          {children}
+        </HapticsProvider>
+        {/* </LenisProvider> */}
       </body>
     </html>
   );

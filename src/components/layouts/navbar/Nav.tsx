@@ -1,6 +1,9 @@
 "use client";
 
-import { CONTACT_EMAIL, SOCIAL_LINKS_PUBLIC } from "@/src/constants/socialLinks";
+import {
+  CONTACT_EMAIL,
+  SOCIAL_LINKS_PUBLIC,
+} from "@/src/constants/socialLinks";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -22,20 +25,20 @@ const ITEM_COLORS = [
 ];
 
 const MENU_LINKS: MenuLink[] = [
-  { name: "Home",         url: "#Home" },
-  { name: "Projects",     url: "#Projects" },
+  { name: "Home", url: "#Home" },
+  { name: "Projects", url: "#Projects" },
   { name: "Feature Work", url: "#FeatureProjects" },
-  { name: "About",        url: "#About" },
-  { name: "Skills",       url: "#Skills" },
-  { name: "Contact",      url: "#Contact" },
-  { name: "Resume",       url: "/Aditya_FullStack.pdf", newTab: true },
+  { name: "About", url: "#About" },
+  { name: "Skills", url: "#Skills" },
+  { name: "Contact", url: "#Contact" },
+  { name: "Resume", url: "/Aditya_FullStack.pdf", newTab: true },
 ];
 
 const DESKTOP_NAV_ITEMS = [
-  { id: 1, text: "Home",     link: "#Home" },
+  { id: 1, text: "Home", link: "#Home" },
   { id: 2, text: "Projects", link: "#Projects" },
-  { id: 3, text: "About",    link: "#About" },
-  { id: 4, text: "Skills",   link: "#Skills" },
+  { id: 3, text: "About", link: "#About" },
+  { id: 4, text: "Skills", link: "#Skills" },
 ];
 
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -102,8 +105,10 @@ export const Nav = () => {
       const el = document.getElementById(id);
       if (!el) return;
       const observer = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-        { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(id);
+        },
+        { rootMargin: "-40% 0px -55% 0px", threshold: 0 },
       );
       observer.observe(el);
       observers.push(observer);
@@ -133,15 +138,16 @@ export const Nav = () => {
         )}
       >
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex items-center justify-between">
-
           {/* ── Desktop ── */}
           <div className="hidden lg:flex w-full items-center justify-between font-display">
-
             {/* Logo — uses <a> so LenisProvider interceptor handles it */}
             <a
               href="#Home"
               className="text-2xl font-bold uppercase"
-              onClick={(e) => { e.preventDefault(); scrollTo("#Home"); }}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo("#Home");
+              }}
             >
               Aditya<span className="text-accent-soft">.dev</span>
             </a>
@@ -153,13 +159,16 @@ export const Nav = () => {
                   <a
                     key={item.id}
                     href={item.link}
-                    onClick={(e) => { e.preventDefault(); scrollTo(item.link); }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollTo(item.link);
+                    }}
                   >
                     <div className="relative overflow-hidden cursor-pointer group h-6">
                       <div
                         className={cn(
                           "transition-transform uppercase duration-300 ease-out group-hover:-translate-y-full",
-                          isActive ? "text-accent-soft" : ""
+                          isActive ? "text-accent-soft" : "",
                         )}
                       >
                         {item.text}
@@ -179,7 +188,10 @@ export const Nav = () => {
             {/* CTA */}
             <a
               href="#Contact"
-              onClick={(e) => { e.preventDefault(); scrollTo("#Contact"); }}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo("#Contact");
+              }}
               className="
                 group relative inline-flex items-center justify-center
                 px-6 py-2 rounded-full font-medium tracking-wide
@@ -206,7 +218,11 @@ export const Nav = () => {
           <div className="lg:hidden w-full flex items-center justify-between">
             <a
               href="#Home"
-              onClick={(e) => { e.preventDefault(); scrollTo("#Home"); close(); }}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo("#Home");
+                close();
+              }}
               className="font-display text-xl font-bold uppercase"
             >
               Aditya<span className="text-accent-soft">.dev</span>
@@ -218,8 +234,18 @@ export const Nav = () => {
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
             >
-              <span className={cn("block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300", isMenuOpen ? "rotate-45 translate-y-[3.25px]" : "")} />
-              <span className={cn("block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300", isMenuOpen ? "-rotate-45 -translate-y-[3.25px]" : "")} />
+              <span
+                className={cn(
+                  "block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300",
+                  isMenuOpen ? "rotate-45 translate-y-[3.25px]" : "",
+                )}
+              />
+              <span
+                className={cn(
+                  "block w-4 h-[1.5px] bg-white rounded-full origin-center transition-all duration-300",
+                  isMenuOpen ? "-rotate-45 -translate-y-[3.25px]" : "",
+                )}
+              />
             </button>
           </div>
         </div>
@@ -229,7 +255,9 @@ export const Nav = () => {
       <div
         className={cn(
           "fixed inset-0 z-[110] lg:hidden transition-all duration-300 bg-black/75",
-          isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+          isMenuOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none",
         )}
         onClick={close}
       />
@@ -249,10 +277,11 @@ export const Nav = () => {
         )}
       >
         <div className="max-h-[calc(100dvh-100px)] overflow-y-auto flex flex-col px-5 sm:px-6 pt-6 pb-5 gap-6">
-
           {/* MENU section */}
           <div>
-            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">Menu</p>
+            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">
+              Menu
+            </p>
             <ul className="flex flex-col gap-0">
               {MENU_LINKS.map((link, idx) => (
                 <li key={link.name}>
@@ -265,15 +294,29 @@ export const Nav = () => {
                       onClick={close}
                       className="group w-full py-0.5 flex items-center gap-4 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
                       style={{
-                        transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
+                        transitionDelay: isMenuOpen
+                          ? `${idx * 40 + 60}ms`
+                          : "0ms",
                         opacity: isMenuOpen ? 1 : 0,
-                        transform: isMenuOpen ? "translateX(0)" : "translateX(12px)",
-                        transition: "opacity 0.3s, transform 0.3s, padding 0.15s",
+                        transform: isMenuOpen
+                          ? "translateX(0)"
+                          : "translateX(12px)",
+                        transition:
+                          "opacity 0.3s, transform 0.3s, padding 0.15s",
                       }}
                     >
-                      <span className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }} />
-                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">{link.name}</span>
-                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">↗</span>
+                      <span
+                        className="w-[9px] h-[9px] rounded-full flex-shrink-0"
+                        style={{
+                          background: ITEM_COLORS[idx % ITEM_COLORS.length],
+                        }}
+                      />
+                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">
+                        {link.name}
+                      </span>
+                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">
+                        ↗
+                      </span>
                     </a>
                   ) : (
                     // Internal hash links — use scrollTo via Lenis, NOT router.push
@@ -281,15 +324,29 @@ export const Nav = () => {
                       onClick={() => handleNavClick(link.url)}
                       className="group w-full flex items-center py-0.5 gap-4 border-b border-white/6 last:border-b-0 transition-all duration-150 active:pl-1"
                       style={{
-                        transitionDelay: isMenuOpen ? `${idx * 40 + 60}ms` : "0ms",
+                        transitionDelay: isMenuOpen
+                          ? `${idx * 40 + 60}ms`
+                          : "0ms",
                         opacity: isMenuOpen ? 1 : 0,
-                        transform: isMenuOpen ? "translateX(0)" : "translateX(12px)",
-                        transition: "opacity 0.3s, transform 0.3s, padding 0.15s",
+                        transform: isMenuOpen
+                          ? "translateX(0)"
+                          : "translateX(12px)",
+                        transition:
+                          "opacity 0.3s, transform 0.3s, padding 0.15s",
                       }}
                     >
-                      <span className="w-[9px] h-[9px] rounded-full flex-shrink-0" style={{ background: ITEM_COLORS[idx % ITEM_COLORS.length] }} />
-                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">{link.name}</span>
-                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">→</span>
+                      <span
+                        className="w-[9px] h-[9px] rounded-full flex-shrink-0"
+                        style={{
+                          background: ITEM_COLORS[idx % ITEM_COLORS.length],
+                        }}
+                      />
+                      <span className="flex-1 text-left text-lg font-medium text-white/85 group-hover:text-white transition-colors duration-150">
+                        {link.name}
+                      </span>
+                      <span className="text-white/25 text-base leading-none transition-all duration-150 group-hover:text-white/60 group-hover:translate-x-0.5">
+                        →
+                      </span>
                     </button>
                   )}
                 </li>
@@ -302,7 +359,9 @@ export const Nav = () => {
 
           {/* SOCIAL section */}
           <div>
-            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">Social</p>
+            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-4">
+              Social
+            </p>
             <div className="flex flex-wrap gap-2">
               {SOCIAL_LINKS_PUBLIC.map((link, idx) => (
                 <a
@@ -315,7 +374,8 @@ export const Nav = () => {
                     transitionDelay: isMenuOpen ? `${idx * 40 + 320}ms` : "0ms",
                     opacity: isMenuOpen ? 1 : 0,
                     transform: isMenuOpen ? "translateY(0)" : "translateY(6px)",
-                    transition: "opacity 0.25s, transform 0.25s, color 0.15s, background 0.15s",
+                    transition:
+                      "opacity 0.25s, transform 0.25s, color 0.15s, background 0.15s",
                   }}
                 >
                   {link.name}
@@ -338,7 +398,10 @@ export const Nav = () => {
               className="group w-full flex items-center gap-2 px-5 py-3 rounded-full border border-[#F2A900]/30 bg-[#F2A900]/10 text-[#F2A900] text-sm font-medium hover:bg-[#F2A900]/18 hover:border-[#F2A900]/50 transition-all duration-200 active:scale-[0.98]"
             >
               Let&apos;s Talk
-              <ArrowUpRight size={15} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ml-0.5" />
+              <ArrowUpRight
+                size={15}
+                className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ml-0.5"
+              />
             </button>
           </div>
 
@@ -352,7 +415,9 @@ export const Nav = () => {
               transition: "opacity 0.25s, transform 0.25s",
             }}
           >
-            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-1.5">Get In Touch</p>
+            <p className="text-white/30 text-[10px] tracking-[0.22em] uppercase font-mono mb-1.5">
+              Get In Touch
+            </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="text-sm text-[#F2A900]/80 hover:text-[#F2A900] transition-colors duration-150 hover:underline"

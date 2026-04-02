@@ -12,25 +12,38 @@ const links = [
   { text: "Contact", href: "#Contact" },
 ];
 
-
-
 const DeveloperTextInteractive = dynamic(
   () => import("@/src/sections/DeveloperTextInteractive"),
   { ssr: false },
 );
 
 const WATERMARK_WORDS = [
-  { fillText: "BUILD", xFraction: 0.25, rgba: "rgba(250, 197, 40,  1)", color: "#fac528" },
-  { fillText: "SHIP",  xFraction: 0.50, rgba: "rgba(251, 120, 30,  1)", color: "#fb781e" },
-  { fillText: "LEARN", xFraction: 0.75, rgba: "rgba(248,  80, 100, 1)", color: "#f85064" },
+  {
+    fillText: "BUILD",
+    xFraction: 0.25,
+    rgba: "rgba(250, 197, 40,  1)",
+    color: "#fac528",
+  },
+  {
+    fillText: "SHIP",
+    xFraction: 0.5,
+    rgba: "rgba(251, 120, 30,  1)",
+    color: "#fb781e",
+  },
+  {
+    fillText: "LEARN",
+    xFraction: 0.75,
+    rgba: "rgba(248,  80, 100, 1)",
+    color: "#f85064",
+  },
 ] as const;
 
 const sharedRipple = {
-  rippleRadius:    420,
+  rippleRadius: 420,
   rippleAmplitude: 15,
   rippleFrequency: 0.038,
-  rippleSpeed:     0.1,
-  mouseSmoothing:  0.05,
+  rippleSpeed: 0.1,
+  mouseSmoothing: 0.05,
 };
 
 export function Footer() {
@@ -45,13 +58,10 @@ export function Footer() {
 
   return (
     <footer className="relative w-full bg-[#171717] border-t border-white/8 overflow-hidden">
-
       {/* ── Main content ── */}
       <div className="max-w-7xl mx-auto px-6 md:px-10 pt-16 pb-10">
-
         {/* Top row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-14">
-
           {/* Brand */}
           <div className="flex flex-col gap-4">
             <Link
@@ -107,7 +117,8 @@ export function Footer() {
               {CONTACT_EMAIL}
             </a>
             <p className="font-body text-xs text-white/20 leading-relaxed mt-2 max-w-[28ch]">
-              Open to freelance projects, full-time roles, and interesting collabs.
+              Open to freelance projects, full-time roles, and interesting
+              collabs.
             </p>
           </div>
         </div>
@@ -132,7 +143,10 @@ export function Footer() {
       {isDesktop && (
         <div className="w-full pb-40">
           {WATERMARK_WORDS.map(({ fillText, xFraction, rgba }) => (
-            <div key={fillText} className="relative w-full h-[15vw] -mb-32 select-none pointer-events-none">
+            <div
+              key={fillText}
+              className="relative w-full h-[15vw] -mb-32 select-none pointer-events-none"
+            >
               <DeveloperTextInteractive
                 {...sharedRipple}
                 fillText={fillText}
@@ -155,10 +169,10 @@ export function Footer() {
               key={fillText}
               className="font-display font-black uppercase leading-none"
               style={{
-                fontSize:    "clamp(3rem, 24vw, 14rem)",
+                fontSize: "clamp(3rem, 24vw, 14rem)",
                 color,
-                opacity:     0.12 - i * 0.02,        // BUILD 0.12 → SHIP 0.10 → LEARN 0.08
-                paddingLeft: `${i * 8}vw`,            // staircase indent
+                opacity: 0.12 - i * 0.02, // BUILD 0.12 → SHIP 0.10 → LEARN 0.08
+                paddingLeft: `${i * 8}vw`, // staircase indent
                 letterSpacing: "-0.02em",
               }}
             >

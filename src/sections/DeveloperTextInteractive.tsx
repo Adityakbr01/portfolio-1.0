@@ -70,7 +70,11 @@ function parseRgba(rgba: string): [number, number, number, number] {
     parseFloat(m[0]),
     parseFloat(m[1]),
     parseFloat(m[2]),
-    m[4] !== undefined ? parseFloat(m[3]) : (m[3] !== undefined ? parseFloat(m[3]) : 1),
+    m[4] !== undefined
+      ? parseFloat(m[3])
+      : m[3] !== undefined
+        ? parseFloat(m[3])
+        : 1,
   ];
 }
 
@@ -85,27 +89,45 @@ function shadowColor(rgba: string, depthAlpha = 0.55): string {
 }
 
 export default function DeveloperTextInteractive({
-  rippleRadius    = 220,
+  rippleRadius = 220,
   rippleAmplitude = 18,
   rippleFrequency = 0.045,
-  rippleSpeed     = 2.8,
-  mouseSmoothing  = 0.08,
-  rgba            = "rgba(255, 119, 34, 1)",
-  fillText        = "DEVELOPER",
-  xFraction       = 0.5,
+  rippleSpeed = 2.8,
+  mouseSmoothing = 0.08,
+  rgba = "rgba(255, 119, 34, 1)",
+  fillText = "DEVELOPER",
+  xFraction = 0.5,
 }: DeveloperTextInteractiveProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const cfg = useRef({
-    rippleRadius, rippleAmplitude, rippleFrequency,
-    rippleSpeed, mouseSmoothing, rgba, xFraction,
+    rippleRadius,
+    rippleAmplitude,
+    rippleFrequency,
+    rippleSpeed,
+    mouseSmoothing,
+    rgba,
+    xFraction,
   });
   useEffect(() => {
     cfg.current = {
-      rippleRadius, rippleAmplitude, rippleFrequency,
-      rippleSpeed, mouseSmoothing, rgba, xFraction,
+      rippleRadius,
+      rippleAmplitude,
+      rippleFrequency,
+      rippleSpeed,
+      mouseSmoothing,
+      rgba,
+      xFraction,
     };
-  }, [rippleRadius, rippleAmplitude, rippleFrequency, rippleSpeed, mouseSmoothing, rgba, xFraction]);
+  }, [
+    rippleRadius,
+    rippleAmplitude,
+    rippleFrequency,
+    rippleSpeed,
+    mouseSmoothing,
+    rgba,
+    xFraction,
+  ]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -128,29 +150,30 @@ export default function DeveloperTextInteractive({
       return s;
     };
     const prog = gl.createProgram()!;
-    gl.attachShader(prog, compileShader(gl.VERTEX_SHADER,   VERT_SRC));
+    gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, VERT_SRC));
     gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, FRAG_SRC));
     gl.linkProgram(prog);
     gl.useProgram(prog);
 
     const buf = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      -1, -1,  1, -1,  -1, 1,
-       1, -1,  1,  1,  -1, 1,
-    ]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1]),
+      gl.STATIC_DRAW,
+    );
     const aPosLoc = gl.getAttribLocation(prog, "a_pos");
     gl.enableVertexAttribArray(aPosLoc);
     gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, 0, 0);
 
-    const uText       = gl.getUniformLocation(prog, "u_text");
+    const uText = gl.getUniformLocation(prog, "u_text");
     const uResolution = gl.getUniformLocation(prog, "u_resolution");
-    const uMouse      = gl.getUniformLocation(prog, "u_mouse");
-    const uTime       = gl.getUniformLocation(prog, "u_time");
-    const uRadius     = gl.getUniformLocation(prog, "u_radius");
-    const uAmplitude  = gl.getUniformLocation(prog, "u_amplitude");
-    const uFrequency  = gl.getUniformLocation(prog, "u_frequency");
-    const uSpeed      = gl.getUniformLocation(prog, "u_speed");
+    const uMouse = gl.getUniformLocation(prog, "u_mouse");
+    const uTime = gl.getUniformLocation(prog, "u_time");
+    const uRadius = gl.getUniformLocation(prog, "u_radius");
+    const uAmplitude = gl.getUniformLocation(prog, "u_amplitude");
+    const uFrequency = gl.getUniformLocation(prog, "u_frequency");
+    const uSpeed = gl.getUniformLocation(prog, "u_speed");
 
     const tex = gl.createTexture()!;
     const uploadTexture = (img: HTMLCanvasElement) => {
@@ -165,34 +188,34 @@ export default function DeveloperTextInteractive({
     const offscreen = document.createElement("canvas");
 
     const buildTexture = () => {
-      const W = canvas.width  = canvas.offsetWidth;
-      const H = canvas.height = canvas.offsetHeight;
-      offscreen.width  = W;
+      const W = (canvas.width = canvas.offsetWidth);
+      const H = (canvas.height = canvas.offsetHeight);
+      offscreen.width = W;
       offscreen.height = H;
 
-      const oc   = offscreen.getContext("2d")!;
+      const oc = offscreen.getContext("2d")!;
       const { rgba: color, xFraction: xf } = cfg.current;
 
       const fontSize = Math.round(W * 0.12);
-      const cx       = W * xf;
-      const cy       = H / 2;
+      const cx = W * xf;
+      const cy = H / 2;
 
       oc.clearRect(0, 0, W, H);
-      oc.font        = `900 ${fontSize}px Impact, 'Arial Black', sans-serif`;
-      oc.textAlign   = "center";
+      oc.font = `900 ${fontSize}px Impact, 'Arial Black', sans-serif`;
+      oc.textAlign = "center";
       oc.textBaseline = "middle";
 
       // ── 3-D extrusion: paint shadow layers back-to-front ──────────────────
       // Direction: bottom-right (+x, +y) — light source implied top-left.
       // Each layer steps 1 px further out; alpha fades toward the back.
-      const DEPTH       = 18;           // total extrusion depth in px
-      const shade       = shadowColor(color);
-      const midColor    = shadowColor(color, 0.35); // slightly lighter mid-tone
+      const DEPTH = 18; // total extrusion depth in px
+      const shade = shadowColor(color);
+      const midColor = shadowColor(color, 0.35); // slightly lighter mid-tone
 
       // Back-most solid "base" layer — gives the chunky bottom edge
       for (let i = DEPTH; i >= 1; i--) {
         // Gradient: darkest at the back, slightly lighter near the face
-        const progress = i / DEPTH;           // 1 at back, ~0 near face
+        const progress = i / DEPTH; // 1 at back, ~0 near face
         oc.fillStyle = progress > 0.5 ? shade : midColor;
         oc.fillText(fillText, cx + i, cy + i * 0.6);
       }
@@ -215,24 +238,38 @@ export default function DeveloperTextInteractive({
     buildTexture();
     window.addEventListener("resize", buildTexture);
 
-    const raw    = { x: 0.5, y: 0.5 };
+    const raw = { x: 0.5, y: 0.5 };
     const smooth = { x: 0.5, y: 0.5 };
     const onMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       raw.x = (e.clientX - rect.left) / rect.width;
-      raw.y = (e.clientY - rect.top)  / rect.height;
+      raw.y = (e.clientY - rect.top) / rect.height;
     };
     window.addEventListener("mousemove", onMove, { passive: true });
 
     let raf = 0;
-    let t   = 0;
+    let t = 0;
+    let isVisible = true;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0 },
+    );
+    observer.observe(canvas);
+
     const draw = () => {
       raf = requestAnimationFrame(draw);
-      t  += 0.016;
+      if (!isVisible) return; // Skip drawing and computing if not visible
+
+      t += 0.016;
 
       const {
-        rippleRadius: R, rippleAmplitude: AMP,
-        rippleFrequency: FREQ, rippleSpeed: SPD,
+        rippleRadius: R,
+        rippleAmplitude: AMP,
+        rippleFrequency: FREQ,
+        rippleSpeed: SPD,
         mouseSmoothing: LERP,
       } = cfg.current;
 
@@ -247,11 +284,11 @@ export default function DeveloperTextInteractive({
 
       gl.uniform2f(uResolution, canvas.width, canvas.height);
       gl.uniform2f(uMouse, smooth.x, 1.0 - smooth.y);
-      gl.uniform1f(uTime,      t);
-      gl.uniform1f(uRadius,    R);
+      gl.uniform1f(uTime, t);
+      gl.uniform1f(uRadius, R);
       gl.uniform1f(uAmplitude, AMP);
       gl.uniform1f(uFrequency, FREQ);
-      gl.uniform1f(uSpeed,     SPD);
+      gl.uniform1f(uSpeed, SPD);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     };
@@ -259,13 +296,14 @@ export default function DeveloperTextInteractive({
 
     return () => {
       cancelAnimationFrame(raf);
+      observer.disconnect();
       window.removeEventListener("resize", buildTexture);
       window.removeEventListener("mousemove", onMove);
       gl.deleteTexture(tex);
       gl.deleteProgram(prog);
       gl.deleteBuffer(buf);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fillText]);
 
   return (

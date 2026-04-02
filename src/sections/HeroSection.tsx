@@ -1,34 +1,14 @@
 "use client";
 import { SOCIAL_LINKS_PUBLIC } from "@/src/constants/socialLinks";
 import { ArrowDown, ArrowRight } from "lucide-react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 
-
-
-// ── Lazy-load the heavy WebGL canvas (client-only, no SSR) ──────────────────
-const ShaderBackground = dynamic(() => import("./Shaderbackground"), {
-  ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-175 h-175 rounded-full bg-amber-400/10 blur-[120px]" />
-      <div className="absolute bottom-0 left-1/4 w-100 h-100 rounded-full bg-amber-300/8 blur-[100px]" />
-      <div className="absolute bottom-0 right-1/4 w-75 h-75 rounded-full bg-orange-400/6 blur-[90px]" />
-    </div>
-  ),
-});
-
 function HeroSection() {
-
-
   return (
     <section
       id="Home"
       className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#171717] px-4 sm:px-6"
     >
-      {/* ── WebGL shader background ── */}
-      <ShaderBackground />
-
       {/* ── Noise texture overlay (kept for extra grain on top of shader) ── */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.025] z-[1]"
