@@ -2,58 +2,99 @@
 import { CONTACT_EMAIL, SOCIAL_LINKS } from "@/src/constants/socialLinks";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 const links = [
-  { text: "Home", href: "#Home" },
-  { text: "Projects", href: "#Projects" },
-  { text: "About", href: "#About" },
-  { text: "Skills", href: "#Skills" },
-  { text: "Contact", href: "#Contact" },
+  { text: "Home",     href: "#Home"    },
+  { text: "Projects", href: "#Projects"},
+  { text: "About",    href: "#About"   },
+  { text: "Skills",   href: "#Skills"  },
+  { text: "Contact",  href: "#Contact" },
 ];
 
+// Lazy-load WebGL canvas — never shipped to SSR, code-split from the main bundle
 const DeveloperTextInteractive = dynamic(
   () => import("@/src/sections/DeveloperTextInteractive"),
   { ssr: false },
 );
 
 const WATERMARK_WORDS = [
-  {
-    fillText: "BUILD",
-    xFraction: 0.25,
-    rgba: "rgba(250, 197, 40,  1)",
-    color: "#fac528",
-  },
-  {
-    fillText: "SHIP",
-    xFraction: 0.5,
-    rgba: "rgba(251, 120, 30,  1)",
-    color: "#fb781e",
-  },
-  {
-    fillText: "LEARN",
-    xFraction: 0.75,
-    rgba: "rgba(248,  80, 100, 1)",
-    color: "#f85064",
-  },
+  { fillText: "BUILD", xFraction: 0.25, rgba: "rgba(250,197, 40,1)", color: "#fac528" },
+  { fillText: "SHIP",  xFraction: 0.50, rgba: "rgba(251,120, 30,1)", color: "#fb781e" },
+  { fillText: "LEARN", xFraction: 0.75, rgba: "rgba(248, 80,100,1)", color: "#f85064" },
 ] as const;
 
-const sharedRipple = {
-  rippleRadius: 420,
+const SHARED_RIPPLE = {
+  rippleRadius:    420,
   rippleAmplitude: 15,
   rippleFrequency: 0.038,
-  rippleSpeed: 0.1,
-  mouseSmoothing: 0.05,
+  rippleSpeed:     0.1,
+  mouseSmoothing:  0.05,
 };
 
+// ── Memoized watermark rows — never re-render unless props change ─────────────
+const DesktopWatermark = memo(function DesktopWatermark() {
+  return (
+    <div className="w-full pb-40">
+      {WATERMARK_WORDS.map(({ fillText, xFraction, rgba }) => (
+        <div
+          key={fillText}
+          // contain:strict tells the browser this subtree doesn't affect layout
+          className="relative w-full h-[15vw] -mb-32 select-none pointer-events-none"
+          style={{ contain: "strict" }}
+        >
+          <DeveloperTextInteractive
+            {...SHARED_RIPPLE}
+            fillText={fillText}
+            xFraction={xFraction}
+            rgba={rgba}
+          />
+        </div>
+      ))}
+    </div>
+  );
+});
+
+const MobileWatermark = memo(function MobileWatermark() {
+  return (
+    <div
+      className="w-full flex flex-col pb-6 pt-2 overflow-hidden select-none"
+      aria-hidden
+    >
+      {WATERMARK_WORDS.map(({ fillText, color }, i) => (
+        <span
+          key={fillText}
+          className="font-display font-black uppercase leading-none"
+          style={{
+            fontSize:    "clamp(3rem, 24vw, 14rem)",
+            color,
+            opacity:     0.12 - i * 0.02,
+            paddingLeft: `${i * 8}vw`,
+            letterSpacing: "-0.02em",
+            // Promote to its own compositor layer — prevents repaints from
+            // sibling elements bleeding into this text.
+            willChange: "opacity",
+          }}
+        >
+          {fillText}
+        </span>
+      ))}
+    </div>
+  );
+});
+
 export function Footer() {
-  const [isDesktop, setIsDesktop] = useState(false);
+  // Start with null so SSR produces neither branch — avoids hydration mismatch
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-    return () => window.removeEventListener("resize", handleResize);
+    // matchMedia is cheaper than a resize listener for a static breakpoint
+    const mq = window.matchMedia("(min-width: 768px)");
+    setIsDesktop(mq.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
   }, []);
 
   return (
@@ -117,8 +158,7 @@ export function Footer() {
               {CONTACT_EMAIL}
             </a>
             <p className="font-body text-xs text-white/20 leading-relaxed mt-2 max-w-[28ch]">
-              Open to freelance projects, full-time roles, and interesting
-              collabs.
+              Open to freelance projects, full-time roles, and interesting collabs.
             </p>
           </div>
         </div>
@@ -132,55 +172,15 @@ export function Footer() {
             © {new Date().getFullYear()} Aditya Kumar. All rights reserved.
           </p>
           <p className="font-body text-xs text-white/15">
-            Built with Next.js & Tailwind CSS.
+            Built with Next.js &amp; Tailwind CSS.
           </p>
         </div>
       </div>
 
-      {/* ── Watermark: staircase BUILD / SHIP / LEARN ── */}
-
-      {/* DESKTOP: WebGL interactive canvases, stacked rows */}
-      {isDesktop && (
-        <div className="w-full pb-40">
-          {WATERMARK_WORDS.map(({ fillText, xFraction, rgba }) => (
-            <div
-              key={fillText}
-              className="relative w-full h-[15vw] -mb-32 select-none pointer-events-none"
-            >
-              <DeveloperTextInteractive
-                {...sharedRipple}
-                fillText={fillText}
-                xFraction={xFraction}
-                rgba={rgba}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* MOBILE: static CSS-only staircase — zero JS, zero canvas, zero WebGL */}
-      {!isDesktop && (
-        <div
-          className="w-full flex flex-col pb-6 pt-2 overflow-hidden select-none"
-          aria-hidden
-        >
-          {WATERMARK_WORDS.map(({ fillText, color }, i) => (
-            <span
-              key={fillText}
-              className="font-display font-black uppercase leading-none"
-              style={{
-                fontSize: "clamp(3rem, 24vw, 14rem)",
-                color,
-                opacity: 0.12 - i * 0.02, // BUILD 0.12 → SHIP 0.10 → LEARN 0.08
-                paddingLeft: `${i * 8}vw`, // staircase indent
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {fillText}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* ── Watermark ── */}
+      {/* null = SSR / hydrating — render nothing to avoid flash */}
+      {isDesktop === true  && <DesktopWatermark />}
+      {isDesktop === false && <MobileWatermark  />}
     </footer>
   );
 }

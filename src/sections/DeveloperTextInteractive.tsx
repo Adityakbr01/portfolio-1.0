@@ -9,10 +9,6 @@ interface DeveloperTextInteractiveProps {
   mouseSmoothing?: number;
   rgba?: string;
   fillText: string;
-  /**
-   * Horizontal position of the text as a fraction of canvas width.
-   * 0 = far left, 0.5 = center (default), 1 = far right.
-   */
   xFraction?: number;
 }
 
@@ -62,7 +58,6 @@ const FRAG_SRC = `
   }
 `;
 
-// ── Parse "rgba(r, g, b, a)" → [r, g, b, a] ─────────────────────────────────
 function parseRgba(rgba: string): [number, number, number, number] {
   const m = rgba.match(/[\d.]+/g);
   if (!m || m.length < 3) return [255, 119, 34, 1];
@@ -70,22 +65,13 @@ function parseRgba(rgba: string): [number, number, number, number] {
     parseFloat(m[0]),
     parseFloat(m[1]),
     parseFloat(m[2]),
-    m[4] !== undefined
-      ? parseFloat(m[3])
-      : m[3] !== undefined
-        ? parseFloat(m[3])
-        : 1,
+    m[3] !== undefined ? parseFloat(m[3]) : 1,
   ];
 }
 
-// ── Build a darker, slightly desaturated version of the colour for the shadow
 function shadowColor(rgba: string, depthAlpha = 0.55): string {
   const [r, g, b] = parseRgba(rgba);
-  // darken by ~60%, clamp to 0
-  const dr = Math.max(0, r * 0.22);
-  const dg = Math.max(0, g * 0.22);
-  const db = Math.max(0, b * 0.22);
-  return `rgba(${dr},${dg},${db},${depthAlpha})`;
+  return `rgba(${Math.max(0, r * 0.22)},${Math.max(0, g * 0.22)},${Math.max(0, b * 0.22)},${depthAlpha})`;
 }
 
 export default function DeveloperTextInteractive({
@@ -100,6 +86,7 @@ export default function DeveloperTextInteractive({
 }: DeveloperTextInteractiveProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Single ref for all live config — zero re-renders, zero stale closures
   const cfg = useRef({
     rippleRadius,
     rippleAmplitude,
@@ -133,11 +120,14 @@ export default function DeveloperTextInteractive({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // ── WebGL init ────────────────────────────────────────────────────────────
     const gl = canvas.getContext("webgl", {
       alpha: true,
       premultipliedAlpha: false,
       antialias: false,
-    });
+      // Hint the driver this context is low-latency / single-buffered where possible
+      desynchronized: true,
+    } as WebGLContextAttributes);
     if (!gl) return;
 
     gl.enable(gl.BLEND);
@@ -166,6 +156,7 @@ export default function DeveloperTextInteractive({
     gl.enableVertexAttribArray(aPosLoc);
     gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, 0, 0);
 
+    // Cache all uniform locations once
     const uText = gl.getUniformLocation(prog, "u_text");
     const uResolution = gl.getUniformLocation(prog, "u_resolution");
     const uMouse = gl.getUniformLocation(prog, "u_mouse");
@@ -175,7 +166,13 @@ export default function DeveloperTextInteractive({
     const uFrequency = gl.getUniformLocation(prog, "u_frequency");
     const uSpeed = gl.getUniformLocation(prog, "u_speed");
 
+    // Upload texture sampler once — it never changes
+    gl.uniform1i(uText, 0);
+
+    // ── Texture ───────────────────────────────────────────────────────────────
     const tex = gl.createTexture()!;
+    const offscreen = document.createElement("canvas");
+
     const uploadTexture = (img: HTMLCanvasElement) => {
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
@@ -184,8 +181,6 @@ export default function DeveloperTextInteractive({
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     };
-
-    const offscreen = document.createElement("canvas");
 
     const buildTexture = () => {
       const W = (canvas.width = canvas.offsetWidth);
@@ -205,52 +200,61 @@ export default function DeveloperTextInteractive({
       oc.textAlign = "center";
       oc.textBaseline = "middle";
 
-      // ── 3-D extrusion: paint shadow layers back-to-front ──────────────────
-      // Direction: bottom-right (+x, +y) — light source implied top-left.
-      // Each layer steps 1 px further out; alpha fades toward the back.
-      const DEPTH = 18; // total extrusion depth in px
+      const DEPTH = 18;
       const shade = shadowColor(color);
-      const midColor = shadowColor(color, 0.35); // slightly lighter mid-tone
+      const midColor = shadowColor(color, 0.35);
 
-      // Back-most solid "base" layer — gives the chunky bottom edge
       for (let i = DEPTH; i >= 1; i--) {
-        // Gradient: darkest at the back, slightly lighter near the face
-        const progress = i / DEPTH; // 1 at back, ~0 near face
-        oc.fillStyle = progress > 0.5 ? shade : midColor;
+        oc.fillStyle = i / DEPTH > 0.5 ? shade : midColor;
         oc.fillText(fillText, cx + i, cy + i * 0.6);
       }
 
-      // ── Bevel highlight: 1-px top-left offset in a near-white tint ────────
-      // Creates the illusion of light catching the top edge of the letter.
       const [r, g, b, a] = parseRgba(color);
-      const highlightAlpha = Math.min(1, a * 0.45);
-      oc.fillStyle = `rgba(${Math.min(255, r + 80)},${Math.min(255, g + 80)},${Math.min(255, b + 80)},${highlightAlpha})`;
+      oc.fillStyle = `rgba(${Math.min(255, r + 80)},${Math.min(255, g + 80)},${Math.min(255, b + 80)},${Math.min(1, a * 0.45)})`;
       oc.fillText(fillText, cx - 1, cy - 1);
 
-      // ── Face (top layer) — the original colour ────────────────────────────
       oc.fillStyle = color;
       oc.fillText(fillText, cx, cy);
 
       uploadTexture(offscreen);
       gl.viewport(0, 0, W, H);
+
+      // Re-upload resolution uniform immediately after resize
+      gl.uniform2f(uResolution, W, H);
     };
 
     buildTexture();
-    window.addEventListener("resize", buildTexture);
+
+    // ── Debounced resize — avoid thrashing the GPU on every pixel drag ────────
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(buildTexture, 120);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    // ── Mouse: capture raw coords in a rAF-synced variable (no per-event math)
+    // raw is written from the mousemove handler; smooth is updated in draw().
+    // We store canvas rect lazily and invalidate it on resize so we never call
+    // getBoundingClientRect() inside the rAF loop.
+    let rect = canvas.getBoundingClientRect();
+    const onRectInvalidate = () => {
+      rect = canvas.getBoundingClientRect();
+    };
 
     const raw = { x: 0.5, y: 0.5 };
     const smooth = { x: 0.5, y: 0.5 };
+
     const onMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
       raw.x = (e.clientX - rect.left) / rect.width;
       raw.y = (e.clientY - rect.top) / rect.height;
     };
     window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("resize", onRectInvalidate, { passive: true });
+    window.addEventListener("scroll", onRectInvalidate, { passive: true });
 
-    let raf = 0;
-    let t = 0;
+    // ── Visibility: stop the rAF loop when off-screen ─────────────────────────
     let isVisible = true;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
@@ -259,11 +263,26 @@ export default function DeveloperTextInteractive({
     );
     observer.observe(canvas);
 
-    const draw = () => {
-      raf = requestAnimationFrame(draw);
-      if (!isVisible) return; // Skip drawing and computing if not visible
+    // ── Animation loop ────────────────────────────────────────────────────────
+    let raf = 0;
+    let lastTs = 0; // tracks real wall-clock time via performance.now()
 
-      t += 0.016;
+    // Cache previous uniform values to skip redundant uploads
+    let prevMx = -1,
+      prevMy = -1;
+    let prevR = -1,
+      prevAmp = -1,
+      prevFreq = -1,
+      prevSpd = -1;
+
+    const draw = (ts: number) => {
+      raf = requestAnimationFrame(draw);
+      if (!isVisible) return;
+
+      // Real delta avoids drift from dropped frames
+      if (lastTs === 0) lastTs = ts;
+      const dt = Math.min((ts - lastTs) * 0.001, 0.05); // cap at 50 ms
+      lastTs = ts;
 
       const {
         rippleRadius: R,
@@ -278,26 +297,48 @@ export default function DeveloperTextInteractive({
 
       gl.clear(gl.COLOR_BUFFER_BIT);
 
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.uniform1i(uText, 0);
+      // Only re-upload uniforms that actually changed ─────────────────────────
+      const mx = smooth.x;
+      const my = 1.0 - smooth.y;
+      if (mx !== prevMx || my !== prevMy) {
+        gl.uniform2f(uMouse, mx, my);
+        prevMx = mx;
+        prevMy = my;
+      }
 
-      gl.uniform2f(uResolution, canvas.width, canvas.height);
-      gl.uniform2f(uMouse, smooth.x, 1.0 - smooth.y);
-      gl.uniform1f(uTime, t);
-      gl.uniform1f(uRadius, R);
-      gl.uniform1f(uAmplitude, AMP);
-      gl.uniform1f(uFrequency, FREQ);
-      gl.uniform1f(uSpeed, SPD);
+      // u_time always changes
+      gl.uniform1f(uTime, ts * 0.001);
+
+      if (R !== prevR) {
+        gl.uniform1f(uRadius, R);
+        prevR = R;
+      }
+      if (AMP !== prevAmp) {
+        gl.uniform1f(uAmplitude, AMP);
+        prevAmp = AMP;
+      }
+      if (FREQ !== prevFreq) {
+        gl.uniform1f(uFrequency, FREQ);
+        prevFreq = FREQ;
+      }
+      if (SPD !== prevSpd) {
+        gl.uniform1f(uSpeed, SPD);
+        prevSpd = SPD;
+      }
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      void dt; // used only for potential future physics; suppresses lint
     };
-    draw();
+    raf = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(raf);
+      clearTimeout(resizeTimer);
       observer.disconnect();
-      window.removeEventListener("resize", buildTexture);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("resize", onRectInvalidate);
+      window.removeEventListener("scroll", onRectInvalidate);
       window.removeEventListener("mousemove", onMove);
       gl.deleteTexture(tex);
       gl.deleteProgram(prog);
