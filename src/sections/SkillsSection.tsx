@@ -1,5 +1,5 @@
-import React from "react";
 import { Layout, Server, Database, Terminal } from "lucide-react";
+import { motion, Variants } from "motion/react";
 
 // Using widely available Devicon SVGs
 const skillCategories = [
@@ -138,9 +138,45 @@ const skillCategories = [
   },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const categoryVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const skillVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
+
 function SkillsSection() {
   return (
-    <div
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      variants={containerVariants}
       id="Skills"
       className="relative w-full bg-[#171717] py-20 sm:py-24 md:py-32 overflow-hidden"
     >
@@ -151,7 +187,7 @@ function SkillsSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Header */}
-        <div className="mb-12 sm:mb-16">
+        <motion.div variants={categoryVariants} className="mb-12 sm:mb-16">
           <p className="font-display uppercase text-amber-200/60 tracking-[0.25em] md:tracking-[0.3em] text-xs sm:text-sm mb-3">
             What I Use
           </p>
@@ -159,15 +195,16 @@ function SkillsSection() {
             Skills
           </h2>
           <div className="mt-4 h-px w-16 bg-amber-200/40" />
-        </div>
+        </motion.div>
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {skillCategories.map((cat, i) => {
             const Icon = cat.icon;
             return (
-              <div
+              <motion.div
                 key={cat.category}
+                variants={categoryVariants}
                 className="
                   relative flex flex-col gap-5 sm:gap-6 p-5 sm:p-8 rounded-3xl overflow-hidden
                   apple-border-shine bg-white/3
@@ -194,8 +231,9 @@ function SkillsSection() {
 
                 <div className="relative flex flex-wrap gap-3 mt-2">
                   {cat.skills.map((skill) => (
-                    <span
+                    <motion.span
                       key={skill.name}
+                      variants={skillVariants}
                       className="
                         flex items-center gap-2
                         px-3 sm:px-4 py-2 rounded-full 
@@ -214,17 +252,17 @@ function SkillsSection() {
                         loading="lazy"
                       />
                       {skill.name}
-                    </span>
+                    </motion.span>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
       </div>
 
       <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
-    </div>
+    </motion.div>
   );
 }
 

@@ -67,7 +67,8 @@
   --radius: 0.5rem;
 
   /* Custom Colors */
-  --color-accent: 45 93% 58%; /* amber base */
+  --color-accent: 45 93% 58%;
+  /* amber base */
   --color-accent-soft: 45 93% 75%;
   --color-accent-light: 45 93% 95%;
 
@@ -164,17 +165,20 @@ body {
 
 html {
   scroll-behavior: smooth;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 html::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none;
+  /* Chrome, Safari, Edge */
 }
 
 @keyframes marquee {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-50%);
   }
@@ -188,18 +192,19 @@ html::-webkit-scrollbar {
 .apple-border-shine::after {
   content: "";
   position: absolute;
-  inset: 0; /* Stretches exactly to the edges of the parent */
-  border-radius: inherit; /* Automatically matches the parent's rounded corners! */
-  padding: 1px; /* This controls the thickness of your border */
+  inset: 0;
+  /* Stretches exactly to the edges of the parent */
+  border-radius: inherit;
+  /* Automatically matches the parent's rounded corners! */
+  padding: 1px;
+  /* This controls the thickness of your border */
 
   /* The top-left and bottom-right shine colors */
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 255, 255, 0.05) 25%,
-    rgba(255, 255, 255, 0.05) 75%,
-    rgba(255, 255, 255, 0.5) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.05) 25%,
+      rgba(255, 255, 255, 0.05) 75%,
+      rgba(255, 255, 255, 0.5) 100%);
   /* Modern CSS Masking to cut out the inside, leaving ONLY the border */
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
@@ -223,8 +228,6 @@ html::-webkit-scrollbar {
 section {
   position: relative;
   width: 100%;
-  height: 100svh;
-  overflow: hidden;
 }
 
 .shape {

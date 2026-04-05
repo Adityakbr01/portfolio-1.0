@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowUpRight, Code2, Layers, Cpu, GitCommit } from "lucide-react";
+import { motion, Variants } from "motion/react";
 
 const stats = [
   { value: "1+", label: "Years Experience", icon: Cpu },
@@ -17,9 +18,33 @@ const interests = [
   "Clean Architecture",
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
 function AboutSection() {
   return (
-    <div
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={containerVariants}
       id="About"
       className="relative w-full bg-[#171717] py-20 sm:py-24 md:py-32 overflow-hidden"
     >
@@ -43,7 +68,7 @@ function AboutSection() {
           {/* ── Left: Text ── */}
           <div className="flex flex-col gap-8 md:gap-10">
             {/* Header */}
-            <div>
+            <motion.div variants={itemVariants}>
               <p className="font-display uppercase text-amber-200/60 tracking-[0.25em] md:tracking-[0.3em] text-xs sm:text-sm mb-3">
                 Who I Am
               </p>
@@ -51,10 +76,10 @@ function AboutSection() {
                 About
               </h2>
               <div className="mt-4 h-px w-16 bg-amber-200/40" />
-            </div>
+            </motion.div>
 
             {/* Body copy */}
-            <div className="flex flex-col gap-5 font-body text-white/50 text-sm sm:text-base leading-relaxed">
+            <motion.div variants={itemVariants} className="flex flex-col gap-5 font-body text-white/50 text-sm sm:text-base leading-relaxed">
               <p>
                 I&apos;m{" "}
                 <span className="text-white/80 font-medium">Aditya</span>, a
@@ -67,10 +92,10 @@ function AboutSection() {
                 <span className="text-amber-200/80">full-time roles</span> and
                 selective freelance projects.
               </p>
-            </div>
+            </motion.div>
 
             {/* Interests */}
-            <div className="flex flex-col gap-3">
+            <motion.div variants={itemVariants} className="flex flex-col gap-3">
               <p className="font-display uppercase text-white/25 tracking-[0.2em] text-xs">
                 Interests
               </p>
@@ -90,10 +115,10 @@ function AboutSection() {
                   </span>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3">
+            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3">
               <a
                 href="/Aditya_FullStack.pdf"
                 target="_blank"
@@ -134,7 +159,7 @@ function AboutSection() {
                   className="opacity-50 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
               </a>
-            </div>
+            </motion.div>
           </div>
 
           {/* ── Right: Stats grid ── */}
@@ -142,8 +167,9 @@ function AboutSection() {
             {stats.map((stat, i) => {
               const Icon = stat.icon;
               return (
-                <div
+                <motion.div
                   key={stat.label}
+                  variants={itemVariants}
                   className="
                     group relative flex flex-col items-start justify-between
                     p-5 sm:p-7 rounded-3xl overflow-hidden
@@ -174,7 +200,7 @@ function AboutSection() {
                       {stat.label}
                     </span>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -182,7 +208,7 @@ function AboutSection() {
       </div>
 
       <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
-    </div>
+    </motion.div>
   );
 }
 

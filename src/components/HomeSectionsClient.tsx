@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { Footer } from "./layouts/footer/Footer";
 import HeroSection from "../sections/HeroSection";
+import Activity from "../sections/Activity";
 
 const ProjectsSection = dynamic(
   () => import("@/src/sections/ProjectsSection"),
@@ -37,6 +38,7 @@ export default function HomeSectionsClient() {
       <FeatureProjects />
       <AboutSection />
       <SkillsSection />
+      <Activity />
       {/* <Testimonial /> */}
       <ContactSection />
       <Footer />

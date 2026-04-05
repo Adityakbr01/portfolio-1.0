@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { SOCIAL_LINKS } from "@/src/constants/socialLinks";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { sendEmailAction } from "@/src/actions/sendEmail";
+import { motion, Variants } from "motion/react";
 
 function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -26,19 +27,46 @@ function ContactSection() {
     }
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  };
+
   return (
-    <div
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.15 }}
+      variants={containerVariants}
       id="Contact"
-      className="relative w-full bg-[#171717] py-20 sm:py-24 md:py-32 overflow-hidden"
+      className="relative z-20 w-full bg-[#171717] py-20 sm:py-24 md:py-32 overflow-hidden isolate"
     >
       {/* Ambient */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-175 h-100 rounded-full bg-amber-400/8 blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Header */}
-        <div className="mb-12 sm:mb-16 text-center">
+        <motion.div variants={itemVariants} className="mb-12 sm:mb-16 text-center">
           <p className="font-display uppercase text-amber-200/60 tracking-[0.25em] md:tracking-[0.3em] text-xs sm:text-sm mb-3">
             Get In Touch
           </p>
@@ -49,15 +77,16 @@ function ContactSection() {
           <p className="mt-6 font-body text-sm sm:text-base text-white/40 max-w-md mx-auto">
             Have a project in mind or want to chat? My inbox is always open.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-5xl mx-auto">
 
           {/* Socials */}
           <div className="lg:col-span-2 flex flex-col gap-4 justify-center">
             {SOCIAL_LINKS.map(({ icon: Icon, name, value, url, id }) => (
-              <a
+              <motion.a
                 key={name}
+                variants={itemVariants}
                 href={url}
                 target={id === "email" ? undefined : "_blank"}
                 rel={id === "email" ? undefined : "noopener noreferrer"}
@@ -76,12 +105,12 @@ function ContactSection() {
                   <span className="font-display uppercase text-xs tracking-widest text-white/30">{name}</span>
                   <span className="font-body text-sm text-white/55 group-hover:text-white/80 transition-colors">{value}</span>
                 </div>
-              </a>
+              </motion.a>
             ))}
           </div>
 
           {/* Form */}
-          <div className="lg:col-span-3">
+          <motion.div variants={itemVariants} className="lg:col-span-3">
             {sent ? (
               <div className="h-full flex flex-col items-center justify-center gap-4 p-10 rounded-2xl border border-amber-200/20 bg-amber-200/5 text-center">
                 <div className="text-4xl">✉️</div>
@@ -156,57 +185,57 @@ function ContactSection() {
                   />
                 </div>
                 {error && <p className="text-red-400 text-sm font-body">{error}</p>}
-              <button
-  type="submit"
-  disabled={isLoading}
-  className="
-    group cursor-pointer  relative flex items-center justify-center gap-2 mt-1 w-full px-7 py-3 rounded-full
-    font-body font-medium tracking-wide overflow-hidden
-    border border-amber-400/30 bg-amber-400/10 text-amber-200
-    transition-colors duration-500
-    hover:border-amber-400/50
-    hover:shadow-[0_0_20px_rgba(251,191,36,0.15)]
-    active:scale-95 disabled:opacity-70 disabled:pointer-events-none
-  "
->
-  {/* Ripple — expands from behind the arrow icon */}
-  <span
-    className="
-      absolute right-[36%] top-1/2 -translate-y-1/2
-      w-6 h-6 rounded-full bg-amber-400
-      scale-0 transition-transform duration-700 ease-out origin-center
-      group-hover:scale-[50]
-      -z-0
-    "
-  />
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="
+                    group cursor-pointer  relative flex items-center justify-center gap-2 mt-1 w-full px-7 py-3 rounded-full
+                    font-body font-medium tracking-wide overflow-hidden
+                    border border-amber-400/30 bg-amber-400/10 text-amber-200
+                    transition-colors duration-500
+                    hover:border-amber-400/50
+                    hover:shadow-[0_0_20px_rgba(251,191,36,0.15)]
+                    active:scale-95 disabled:opacity-70 disabled:pointer-events-none
+                  "
+                >
+                  {/* Ripple — expands from behind the arrow icon */}
+                  <span
+                    className="
+                      absolute right-[36%] top-1/2 -translate-y-1/2
+                      w-6 h-6 rounded-full bg-amber-400
+                      scale-0 transition-transform duration-700 ease-out origin-center
+                      group-hover:scale-[50]
+                      z-0
+                    "
+                  />
 
-  {/* Label flips dark as ripple covers it */}
-  <span className="relative z-10 transition-colors duration-300 group-hover:text-[#171717] mr-2">
-    {isLoading ? "Sending" : "Send Message"}
-  </span>
+                  {/* Label flips dark as ripple covers it */}
+                  <span className="relative z-10 transition-colors duration-300 group-hover:text-[#171717] mr-2">
+                    {isLoading ? "Sending" : "Send Message"}
+                  </span>
 
-  {/* Arrow / Spinner icon */}
-  <span
-    className="
-      relative z-10 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0
-      bg-white/10 text-amber-200
-      transition-all duration-700
-      group-hover:bg-[#171717] group-hover:text-amber-400
-      group-hover:rotate-[-45deg]
-    "
-  >
-    {isLoading
-      ? <Loader2 size={14} className="animate-spin" />
-      : <ArrowRight className="w-3.5 h-3.5" />
-    }
-  </span>
-</button>
+                  {/* Arrow / Spinner icon */}
+                  <span
+                    className="
+                      relative z-10 w-6 h-6 rounded-full flex items-center justify-center shrink-0
+                      bg-white/10 text-amber-200
+                      transition-all duration-700
+                      group-hover:bg-[#171717] group-hover:text-amber-400
+                      group-hover:-rotate-45
+                    "
+                  >
+                    {isLoading
+                      ? <Loader2 size={14} className="animate-spin" />
+                      : <ArrowRight className="w-3.5 h-3.5" />
+                    }
+                  </span>
+                </button>
               </form>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
