@@ -1,5 +1,6 @@
 import { Nav } from "@/src/components/layouts/navbar/Nav";
 import HapticsProvider from "@/src/components/providers/HapticsProvider";
+import LenisProvider from "@/src/components/providers/LenisProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,10 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <HapticsProvider>
-          <Nav />
-          {children}
-        </HapticsProvider>
+        <LenisProvider>
+          <HapticsProvider>
+            <Nav />
+            {children}
+          </HapticsProvider>
+        </LenisProvider>
       </body>
     </html>
   );

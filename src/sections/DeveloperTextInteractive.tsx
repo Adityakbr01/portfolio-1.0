@@ -69,7 +69,7 @@ function parseRgba(rgba: string): [number, number, number, number] {
   ];
 }
 
-function shadowColor(rgba: string, depthAlpha = 0.55): string {
+function shadowColor(rgba: string, depthAlpha = 0.5): string {
   const [r, g, b] = parseRgba(rgba);
   return `rgba(${Math.max(0, r * 0.22)},${Math.max(0, g * 0.22)},${Math.max(0, b * 0.22)},${depthAlpha})`;
 }
@@ -120,29 +120,70 @@ export default function DeveloperTextInteractive({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // ── WebGL init ────────────────────────────────────────────────────────────
-    const gl = canvas.getContext("webgl", {
-      alpha: true,
-      premultipliedAlpha: false,
-      antialias: false,
-      // Hint the driver this context is low-latency / single-buffered where possible
-      desynchronized: true,
-    } as WebGLContextAttributes);
-    if (!gl) return;
+    console.log("DeveloperTextInteractive: Initializing WebGL canvas", {
+      fillText,
+    });
 
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // ── WebGL init ────────────────────────────────────────────────────────────
+    const glOpts: WebGLContextAttributes = {
+      alpha: true,
+      premultipliedAlpha: true, // Often more stable against black-screen issues on hardware acceleration
+      antialias: false,
+      preserveDrawingBuffer: true,
+    };
+    const gl = canvas.getContext("webgl", glOpts);
+    if (!gl) {
+      console.error(
+        "[WebGL Debug] Failed to get WebGL context. Hardware acceleration might be disabled or fallback failed.",
+      );
+      return;
+    }
+
+    console.log(
+      "[WebGL Debug] Context acquired. Requested:",
+      glOpts,
+      "Actual:",
+      gl.getContextAttributes(),
+    );
+
+    // Utility to trace where black screens originate
+    const checkGLError = (step: string) => {
+      const err = gl.getError();
+      if (err !== gl.NO_ERROR)
+        console.error(`[WebGL Debug] Error at ${step}:`, err);
+    };
+
+    // Disabled GL_BLEND to prevent alpha-channel multiplication issues (A*A) which can create opaque black backgrounds.
+    // Since we're drawing a fullscreen quad over the canvas, we can just output the texture's premultiplied pixels directly.
+    gl.disable(gl.BLEND);
+    gl.clearColor(0, 0, 0, 0); // Transparent background
+
+    checkGLError("init");
 
     const compileShader = (type: number, src: string) => {
       const s = gl.createShader(type)!;
       gl.shaderSource(s, src);
       gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error("Shader compile error:", gl.getShaderInfoLog(s));
+        return null;
+      }
       return s;
     };
     const prog = gl.createProgram()!;
-    gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, VERT_SRC));
-    gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, FRAG_SRC));
+    const vertShader = compileShader(gl.VERTEX_SHADER, VERT_SRC);
+    const fragShader = compileShader(gl.FRAGMENT_SHADER, FRAG_SRC);
+    if (!vertShader || !fragShader) {
+      console.error("Failed to compile shaders");
+      return;
+    }
+    gl.attachShader(prog, vertShader);
+    gl.attachShader(prog, fragShader);
     gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error("Program link error:", gl.getProgramInfoLog(prog));
+      return;
+    }
     gl.useProgram(prog);
 
     const buf = gl.createBuffer()!;
@@ -174,6 +215,7 @@ export default function DeveloperTextInteractive({
     const offscreen = document.createElement("canvas");
 
     const uploadTexture = (img: HTMLCanvasElement) => {
+      gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -185,10 +227,21 @@ export default function DeveloperTextInteractive({
     const buildTexture = () => {
       const W = (canvas.width = canvas.offsetWidth);
       const H = (canvas.height = canvas.offsetHeight);
+
+      if (W === 0 || H === 0) {
+        console.warn("Canvas has zero dimensions:", { W, H });
+        return;
+      }
+
       offscreen.width = W;
       offscreen.height = H;
 
-      const oc = offscreen.getContext("2d")!;
+      const oc = offscreen.getContext("2d");
+      if (!oc) {
+        console.error("Failed to get 2D context from offscreen canvas");
+        return;
+      }
+
       const { rgba: color, xFraction: xf } = cfg.current;
 
       const fontSize = Math.round(W * 0.12);
@@ -221,11 +274,13 @@ export default function DeveloperTextInteractive({
 
       // Re-upload resolution uniform immediately after resize
       gl.uniform2f(uResolution, W, H);
+
+      console.log("Texture built and uploaded:", { W, H, fillText });
     };
 
     buildTexture();
 
-    // ── Debounced resize — avoid thrashing the GPU on every pixel drag ────────
+    // ── Debounced resize – avoid thrashing the GPU on every pixel drag ────────
     let resizeTimer: ReturnType<typeof setTimeout>;
     const onResize = () => {
       clearTimeout(resizeTimer);
@@ -266,6 +321,7 @@ export default function DeveloperTextInteractive({
     // ── Animation loop ────────────────────────────────────────────────────────
     let raf = 0;
     let lastTs = 0; // tracks real wall-clock time via performance.now()
+    let frameCount = 0;
 
     // Cache previous uniform values to skip redundant uploads
     let prevMx = -1,
@@ -278,6 +334,11 @@ export default function DeveloperTextInteractive({
     const draw = (ts: number) => {
       raf = requestAnimationFrame(draw);
       if (!isVisible) return;
+
+      frameCount++;
+      if (frameCount === 1) {
+        console.log("Animation loop started, rendering first frame");
+      }
 
       // Real delta avoids drift from dropped frames
       if (lastTs === 0) lastTs = ts;
@@ -296,6 +357,10 @@ export default function DeveloperTextInteractive({
       smooth.y += (raw.y - smooth.y) * LERP;
 
       gl.clear(gl.COLOR_BUFFER_BIT);
+
+      // CRITICAL: Bind texture unit and texture before drawing
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
 
       // Only re-upload uniforms that actually changed ─────────────────────────
       const mx = smooth.x;
@@ -318,6 +383,17 @@ export default function DeveloperTextInteractive({
         prevAmp = AMP;
       }
       if (FREQ !== prevFreq) {
+        // Periodically log any silent WebGL runtime errors
+        if (frameCount % 120 === 0) {
+          const err = gl.getError();
+          if (err !== gl.NO_ERROR) {
+            console.error(
+              `[WebGL Debug] Error in draw loop (frame ${frameCount}):`,
+              err,
+            );
+          }
+        }
+
         gl.uniform1f(uFrequency, FREQ);
         prevFreq = FREQ;
       }

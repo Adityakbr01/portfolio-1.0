@@ -2,7 +2,8 @@
 import { SOCIAL_LINKS_PUBLIC } from "@/src/constants/socialLinks";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { motion, Variants } from "motion/react"
+import { motion, Variants } from "motion/react";
+import SmokeEffect from "./SmokeEffect";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -46,10 +47,22 @@ function HeroSection() {
         }}
       />
 
+      <SmokeEffect
+        className="absolute inset-0 z-0 mix-blend-screen opacity-40"
+        color1={[0.6, 0.4, 1]} // Warm golden amber to match your text highlights
+        color2={[0.1, 0.1, 0.66]} // Deep cinematic slate for contrast
+        speed={2}
+        density={1.2}
+        opacity={1.0}
+      />
+
       {/* ── Main content ── */}
       <div className="relative z-10 max-w-7xl mx-auto pt-24 sm:pt-32 pb-16 flex flex-col items-center text-center gap-6 sm:gap-1">
         {/* Availability badge */}
-        <motion.div variants={itemVariants} className="inline-flex items-center sm:mb-6 gap-2 px-3 sm:px-4 py-1.5 rounded-full apple-border-shine bg-white/5 backdrop-blur-sm text-xs sm:text-sm font-body text-white/60">
+        <motion.div
+          variants={itemVariants}
+          className="inline-flex items-center sm:mb-6 gap-2 px-3 sm:px-4 py-1.5 rounded-full  apple-border-shine bg-white/5 backdrop-blur-sm text-xs sm:text-sm font-body text-white/60"
+        >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute shadow-accent-soft shadow-2xl inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
@@ -58,7 +71,10 @@ function HeroSection() {
         </motion.div>
 
         {/* Name */}
-        <motion.div variants={itemVariants} className="flex flex-col items-center gap-0">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col items-center gap-0"
+        >
           <h1 className="font-display font-bold uppercase text-[3rem] sm:text-7xl md:text-[9rem] leading-[0.85] tracking-tight text-white">
             Aditya
             <br />
@@ -67,19 +83,28 @@ function HeroSection() {
         </motion.div>
 
         {/* Role */}
-        <motion.p variants={itemVariants} className="font-display uppercase text-sm sm:text-lg md:text-2xl text-white/90 tracking-[0.2em] sm:tracking-[0.25em]">
+        <motion.p
+          variants={itemVariants}
+          className="font-display uppercase text-sm sm:text-lg md:text-2xl text-white/90 tracking-[0.2em] sm:tracking-[0.25em]"
+        >
           Full Stack Developer
         </motion.p>
 
         {/* Description */}
-        <motion.p variants={itemVariants} className="max-w-lg font-body text-white/70 text-sm sm:text-base md:text-lg leading-relaxed">
+        <motion.p
+          variants={itemVariants}
+          className="max-w-lg font-body text-white/70 text-sm sm:text-base md:text-lg leading-relaxed"
+        >
           I craft high-performance web applications with clean architecture and
           obsessive attention to detail — from <u>pixel-perfect</u> UIs to
           scalable backends.
         </motion.p>
 
         {/* CTA Buttons */}
-        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-2 w-full sm:w-auto">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-2 w-full sm:w-auto"
+        >
           <Link
             href="#Projects"
             className="
@@ -119,7 +144,10 @@ function HeroSection() {
         </motion.div>
 
         {/* Socials */}
-        <motion.div variants={itemVariants} className="flex items-center gap-5 mt-2">
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center gap-5 mt-2"
+        >
           {SOCIAL_LINKS_PUBLIC.map(({ icon: Icon, url, name }) => (
             <a
               key={name}

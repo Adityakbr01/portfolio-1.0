@@ -4,6 +4,7 @@ import {
   CONTACT_EMAIL,
   SOCIAL_LINKS_PUBLIC,
 } from "@/src/constants/socialLinks";
+import { useLenisScroll } from "@/src/components/providers/LenisProvider";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -44,17 +45,23 @@ function cn(...classes: Array<string | false | null | undefined>) {
 }
 
 export const Nav = () => {
+  const lenis = useLenisScroll();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("Home");
 
-  // Native section scroll using CSS `scroll-behavior: smooth` from globals.
+  // Use Lenis for hash navigation when available, otherwise fallback to native smooth scroll.
   const scrollTo = (hash: string) => {
     if (!hash.startsWith("#")) return;
     const target = document.querySelector<HTMLElement>(hash);
     if (!target) return;
 
-    target.scrollIntoView({ block: "start" });
+    if (lenis) {
+      lenis.scrollTo(target, { offset: -80 });
+    } else {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     window.history.replaceState(null, "", hash);
   };
 

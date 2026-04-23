@@ -3,6 +3,7 @@ import { CONTACT_EMAIL, SOCIAL_LINKS } from "@/src/constants/socialLinks";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { memo, useEffect, useState } from "react";
+import SmokeEffect from "@/src/sections/SmokeEffect";
 
 const links = [
   { text: "Home", href: "#Home" },
@@ -66,6 +67,7 @@ const DesktopWatermark = memo(function DesktopWatermark() {
           />
         </div>
       ))}
+      
     </div>
   );
 });
@@ -114,8 +116,11 @@ export function Footer() {
 
   return (
     <footer className="relative w-full bg-[#171717] border-t border-white/8 overflow-hidden">
+      {/* ── Background Smoke Effect ── */}
+    
+
       {/* ── Main content ── */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 pt-16 pb-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-16 pb-10">
         {/* Top row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-14">
           {/* Brand */}
